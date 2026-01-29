@@ -23,3 +23,12 @@ output "search_admin_key" {
 output "search_service_name" {
   value = azurerm_search_service.demo.name
 }
+output "container_app_url" {
+  description = "Public URL for the demo app"
+  value       = "https://${azurerm_container_app.demo.ingress[0].fqdn}"
+}
+
+output "container_registry_name" {
+  description = "Container registry name"
+  value       = azurerm_container_registry.demo.name
+}
