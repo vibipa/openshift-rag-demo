@@ -11,6 +11,31 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
+print("Environment check:")
+print(f"OPENAI_ENDPOINT: {os.getenv('OPENAI_ENDPOINT')}")
+print(f"SEARCH_ENDPOINT: {os.getenv('SEARCH_ENDPOINT')}")
+print(f"GPT4_DEPLOYMENT: {os.getenv('GPT4_DEPLOYMENT')}")
+
+print("Initializing OpenAI client...")
+from openai import AzureOpenAI
+openai_client = AzureOpenAI(
+    azure_endpoint=os.getenv("OPENAI_ENDPOINT"),
+    api_key=os.getenv("OPENAI_KEY"),
+    api_version="2024-02-01"
+)
+print("OpenAI client initialized!")
+
+print("Initializing Search client...")
+from azure.search.documents import SearchClient
+from azure.core.credentials import AzureKeyCredential
+
+search_client = SearchClient(
+    endpoint=os.getenv("SEARCH_ENDPOINT"),
+    index_name="openshift-docs",
+    credential=AzureKeyCredential(os.getenv("SEARCH_KEY"))
+)
+print("Search client initialized!")
+
 # Initialize Azure clients
 openai_client = AzureOpenAI(
     azure_endpoint=os.getenv("OPENAI_ENDPOINT"),
