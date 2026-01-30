@@ -44,7 +44,7 @@ resource "azurerm_container_app" "demo" {
       
       env {
         name  = "SEARCH_ENDPOINT"
-        value = azurerm_search_service.search.endpoint
+        value = "https://${azurerm_search_service.demo.name}.search.windows.net"
       }
       
       env {
@@ -61,7 +61,7 @@ resource "azurerm_container_app" "demo" {
   
   secret {
     name  = "search-key"
-    value = azurerm_search_service.search.primary_key
+    value = azurerm_search_service.demo.primary_key
   }
   
   ingress {
