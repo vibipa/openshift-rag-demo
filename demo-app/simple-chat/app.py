@@ -8,7 +8,7 @@ from azure.core.credentials import AzureKeyCredential
 
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(_name_)
 CORS(app)
 
 print("Environment check:")
@@ -16,8 +16,8 @@ print(f"OPENAI_ENDPOINT: {os.getenv('OPENAI_ENDPOINT')}")
 print(f"SEARCH_ENDPOINT: {os.getenv('SEARCH_ENDPOINT')}")
 print(f"GPT4_DEPLOYMENT: {os.getenv('GPT4_DEPLOYMENT')}")
 
+# Initialize Azure OpenAI client (new SDK)
 print("Initializing OpenAI client...")
-from openai import AzureOpenAI
 openai_client = AzureOpenAI(
     azure_endpoint=os.getenv("OPENAI_ENDPOINT"),
     api_key=os.getenv("OPENAI_KEY"),
@@ -25,10 +25,8 @@ openai_client = AzureOpenAI(
 )
 print("OpenAI client initialized!")
 
+# Initialize Azure Cognitive Search client
 print("Initializing Search client...")
-from azure.search.documents import SearchClient
-from azure.core.credentials import AzureKeyCredential
-
 search_client = SearchClient(
     endpoint=os.getenv("SEARCH_ENDPOINT"),
     index_name="openshift-docs",
@@ -36,37 +34,26 @@ search_client = SearchClient(
 )
 print("Search client initialized!")
 
-# Initialize Azure clients
-openai_client = AzureOpenAI(
-    azure_endpoint=os.getenv("OPENAI_ENDPOINT"),
-    api_key=os.getenv("OPENAI_KEY"),
-    api_version="2024-02-01"
-)
-
-search_client = SearchClient(
-    endpoint=os.getenv("SEARCH_ENDPOINT"),
-    index_name="openshift-docs",
-    credential=AzureKeyCredential(os.getenv("SEARCH_KEY"))
-)
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+
 @app.route('/api/chat', methods=['POST'])
 def chat():
     try:
         user_message = request.json.get('message', '')
-        
+
         # Search for relevant documents
         search_results = search_client.search(
             search_text=user_message,
             top=3
         )
-        
+
         # Build context
         context = "\n\n".join([r.get('content', '')[:1000] for r in search_results])
-        
+
         # Generate answer with GPT-4
         response = openai_client.chat.completions.create(
             model=os.getenv("GPT4_DEPLOYMENT"),
@@ -77,13 +64,14 @@ def chat():
             temperature=0.3,
             max_tokens=500
         )
-        
+
         answer = response.choices[0].message.content
-        
+
         return jsonify({'answer': answer})
-    
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-if __name__ == '__main__':
+
+if _name_ == '_main_':
     app.run(host='0.0.0.0', port=5000, debug=True)
