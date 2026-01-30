@@ -21,8 +21,8 @@ resource "azurerm_cognitive_deployment" "gpt4" {
     version = "0613"
   }
   
-  sku {
-    name     = "Standard"
+  scale {
+    type     = "Standard"
     capacity = 10
   }
 }
