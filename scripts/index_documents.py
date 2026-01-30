@@ -1,4 +1,3 @@
-@"
 import os
 from pathlib import Path
 from azure.search.documents import SearchClient
@@ -7,15 +6,11 @@ from azure.search.documents.indexes.models import (
     SearchIndex,
     SimpleField,
     SearchableField,
+    SearchField,
+    SearchFieldDataType,
     VectorSearch,
     HnswAlgorithmConfiguration,
     VectorSearchProfile,
-    SemanticConfiguration,
-    SemanticField,
-    SemanticPrioritizedFields,
-    SemanticSearch,
-    SearchField,
-    SearchFieldDataType,
     VectorSearchAlgorithmKind
 )
 from azure.core.credentials import AzureKeyCredential
@@ -158,4 +153,7 @@ if __name__ == "__main__":
     index_documents()
     
     print("\n✓ Indexing complete!")
-"@ | Out-File -FilePath "scripts\index_documents.py" -Encoding UTF8
+EOF
+
+# Now run it
+# python scripts/index_documents.py
