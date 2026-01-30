@@ -6,7 +6,7 @@ resource "random_string" "suffix" {
 
 resource "azurerm_resource_group" "demo" {
   name     = "openshift-rag-demo-rg"
-  location = "var.location"
+  location = var.location
   
   tags = {
     Project     = "OpenShift-RAG-Demo"
