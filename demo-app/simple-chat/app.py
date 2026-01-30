@@ -8,7 +8,7 @@ from azure.core.credentials import AzureKeyCredential
 
 load_dotenv()
 
-app = Flask(_name_)
+app = Flask(__name__)
 CORS(app)
 
 print("Environment check:")
