@@ -1,6 +1,6 @@
 resource "azurerm_cognitive_account" "openai" {
   name                = "openshift-demo-openai-${random_string.suffix.result}"
-  location            = var.location
+  location            = "eastus"
   resource_group_name = azurerm_resource_group.demo.name
   kind                = "OpenAI"
   sku_name            = "S0"
@@ -12,13 +12,13 @@ resource "azurerm_cognitive_account" "openai" {
 }
 
 resource "azurerm_cognitive_deployment" "gpt4" {
-  name                 = "gpt-4-deployment"
+  name                 = "gpt-4o-deployment"
   cognitive_account_id = azurerm_cognitive_account.openai.id
   
   model {
     format  = "OpenAI"
-    name    = "gpt-4"
-    version = "0613"
+    name    = "gpt-4o"
+    version = "2024-08-06"
   }
   
   scale {

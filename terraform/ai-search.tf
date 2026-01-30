@@ -11,3 +11,5 @@ resource "azurerm_search_service" "demo" {
   public_network_access_enabled = true
   
   tags = azurerm_resource_group.demo.tags
+
+}
