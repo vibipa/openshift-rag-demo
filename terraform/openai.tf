@@ -26,3 +26,19 @@ resource "azurerm_cognitive_deployment" "gpt4" {
     capacity = 10
   }
 }
+
+resource "azurerm_cognitive_deployment" "embedding" {
+  name                 = "text-embedding-ada-002"
+  cognitive_account_id = azurerm_cognitive_account.openai.id
+  
+  model {
+    format  = "OpenAI"
+    name    = "text-embedding-ada-002"
+    version = "2"
+  }
+  
+  scale {
+    type     = "Standard"
+    capacity = 10
+  }
+}
