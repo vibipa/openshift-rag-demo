@@ -31,7 +31,7 @@ print("OpenAI client initialized!")
 print("Initializing Search client...")
 search_client = SearchClient(
     endpoint=os.getenv("SEARCH_ENDPOINT"),
-    index_name="openshift-docs",
+    index_name="knowledgesource-1769881621654-index",
     credential=AzureKeyCredential(os.getenv("SEARCH_KEY"))
 )
 print("Search client initialized!")
