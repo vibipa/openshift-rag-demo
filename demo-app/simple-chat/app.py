@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from openai import AzureOpenAI
 from azure.search.documents import SearchClient
 from azure.core.credentials import AzureKeyCredential
+from azure.search.documents.models import VectorizedQuery
 
 load_dotenv()
 
@@ -39,30 +40,50 @@ print("Search client initialized!")
 def index():
     return render_template('index.html')
 
-
 @app.route('/api/chat', methods=['POST'])
 def chat():
     try:
         user_message = request.json.get('message', '')
 
-        # Search for relevant documents
+        # Generate embedding for user question
+        embedding_response = openai_client.embeddings.create(
+            model="text-embedding-ada-002",
+            input=user_message
+        )
+        question_embedding = embedding_response.data[0].embedding
+
+        # Vector search using embeddings
+        vector_query = VectorizedQuery(
+            vector=question_embedding,
+            k_nearest_neighbors=3,
+            fields="content_vector"  # Your actual field name
+        )
+
         search_results = search_client.search(
             search_text=user_message,
+            vector_queries=[vector_query],
+            select=["content", "title", "filepath"],  # Get useful fields
             top=3
         )
 
-        # Build context
-        context = "\n\n".join([r.get('content', '')[:1000] for r in search_results])
+        # Build context with better formatting
+        context_parts = []
+        for r in search_results:
+            source = r.get('filepath', 'Unknown')
+            content = r.get('content', '')[:1000]
+            context_parts.append(f"Source: {source}\n{content}")
+        
+        context = "\n\n---\n\n".join(context_parts)
 
         # Generate answer with GPT-4
         response = openai_client.chat.completions.create(
             model=os.getenv("GPT4_DEPLOYMENT"),
             messages=[
-                {"role": "system", "content": "You are an OpenShift expert. Provide step-by-step troubleshooting guidance."},
-                {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {user_message}"}
+                {"role": "system", "content": "You are an OpenShift expert. Use the provided context from our documentation and YAML configurations to provide accurate, specific answers. Always reference the source files when answering."},
+                {"role": "user", "content": f"Context from our OpenShift documentation:\n\n{context}\n\nQuestion: {user_message}"}
             ],
             temperature=0.3,
-            max_tokens=500
+            max_tokens=800  # Increased for better answers
         )
 
         answer = response.choices[0].message.content
@@ -70,6 +91,7 @@ def chat():
         return jsonify({'answer': answer})
 
     except Exception as e:
+        print(f"Error: {str(e)}")  # Debug logging
         return jsonify({'error': str(e)}), 500
 
 
