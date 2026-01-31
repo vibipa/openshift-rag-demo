@@ -1,0 +1,525 @@
+
+# Create Trident Backend
+    $ oc create –f kmcs-ontap-nas.yaml -n trident 
+
+# List all backend 
+    $ oc get tbc –n trident or # oc get tridentbackendconfig –n trident 
+
+# Describe the new backend we created 
+    $ oc describe tridentbackendconfig kmcs-ontap-nas-prod –n trident 
+
+
+# To check the node networking configurations
+    $ oc get nodenetworkstates rhpoc-us02-wrkr03 -o yaml 
+
+# To check if the nfs bridge is up and also show all the bride details
+    $ oc get nodenetworkstates rhpoc-us02-wrkr03 -o yaml | grep -A 20 br-nfs
+    name: br-nfs
+        state: up
+        type: linux-bridge
+        wait-ip: any
+
+# To login to any node from the Command Line Terminal
+    bash-5.1 ~ $ oc debug node/rhpoc-us02-wrkr03
+    Temporary namespace openshift-debug-cx8vw is created for debugging node...
+    Starting pod/rhpoc-us02-wrkr03-debug-rtp26 ...
+    To use host binaries, run `chroot /host`
+    chrootPod IP: 10.0.0.73
+    If you don't see a command prompt, try pressing enter.
+
+# Ping using different interfaces as source
+    # After logging to the specific host from previous section
+    
+    sh-5.1# ping -I br-nfs 10.0.1.71
+    PING 10.0.1.71 (10.0.1.71) from 10.0.1.73 br-nfs: 56(84) bytes of data.
+    64 bytes from 10.0.1.71: icmp_seq=1 ttl=64 time=0.096 ms
+    64 bytes from 10.0.1.71: icmp_seq=2 ttl=64 time=0.118 ms
+
+    sh-5.1# ping -I br-ex 10.0.0.71
+    PING 10.0.0.71 (10.0.0.71) from 10.0.0.73 br-ex: 56(84) bytes of data.
+    64 bytes from 10.0.0.71: icmp_seq=1 ttl=64 time=0.526 ms
+    64 bytes from 10.0.0.71: icmp_seq=2 ttl=64 time=0.279 ms
+
+    sh-5.1# ping -I br-nfs 10.0.1.30
+    PING 10.0.1.30 (10.0.1.30) from 10.0.1.73 br-nfs: 56(84) bytes of data.
+    64 bytes from 10.0.1.30: icmp_seq=1 ttl=64 time=0.099 ms
+    64 bytes from 10.0.1.30: icmp_seq=2 ttl=64 time=0.109 ms
+
+    sh-5.1# ping -I eno8 10.0.1.16
+    PING 10.0.1.16 (10.0.1.16) from 10.0.1.71 eno8: 56(84) bytes of data.
+    64 bytes from 10.0.1.16: icmp_seq=1 ttl=64 time=0.132 ms
+    64 bytes from 10.0.1.16: icmp_seq=2 ttl=64 time=0.173 ms
+
+    sh-5.1# ping -I 10.0.1.71 10.0.1.16
+    PING 10.0.1.16 (10.0.1.16) from 10.0.1.71 : 56(84) bytes of data.
+    64 bytes from 10.0.1.16: icmp_seq=1 ttl=64 time=0.673 ms
+    64 bytes from 10.0.1.16: icmp_seq=2 ttl=64 time=0.142 ms
+
+# From the node debug mode, you can check the status of the ethernet port
+    sh-5.1# ip link show | grep -E "eno"
+    2: eno5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq master ovs-system state UP mode DEFAULT group default qlen 1000
+    3: eno6: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq state UP mode DEFAULT group default qlen 1000
+    4: eno7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq state UP mode DEFAULT group default qlen 1000
+    5: eno8: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq state UP mode DEFAULT group default qlen 1000
+    6: eno9: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq master ovs-system state UP mode DEFAULT group default qlen 1000
+
+# To gather the vlan trunk status from the nncp policy
+    $ oc get nncp nncp-br-vm-ovs-policy -o yaml | grep -A 20 "bridge-mappings"
+
+# To perform a graceful restart of a node:
+    Mark the node as unschedulable:
+    $ oc adm cordon <node1>
+    
+    Drain the node to remove all the running pods:
+    $ oc adm drain <node1> --ignore-daemonsets --delete-emptydir-data --force
+
+    Access the node in debug mode:  
+    $ oc debug node/<node1>
+
+    Change your root directory to /host:
+    $ chroot /host
+
+    Restart the node:
+    $ systemctl reboot
+    In a moment, the node enters the NotReady state.
+    
+    After the reboot is complete, mark the node as schedulable by running the following command:
+    $ oc adm uncordon <node1>
+
+    Verify that the node is ready:
+    $ oc get node <node1>
+
+        Example output
+        NAME    STATUS  ROLES    AGE     VERSION
+        <node1> Ready   worker   6d22h   v1.18.3+b0068a8
+
+
+# To login to a running pod
+
+        bash-5.1 ~ $ oc rsh -n default iso-uploader
+        / # 
+        / # df -h
+        Filesystem                Size      Used Available Use% Mounted on
+        overlay                  99.4G     31.8G     67.6G  32% /
+        tmpfs                    64.0M         0     64.0M   0% /dev
+        shm                      64.0M         0     64.0M   0% /dev/shm
+        tmpfs                   302.1G     88.5M    302.0G   0% /etc/resolv.conf
+        tmpfs                   302.1G     88.5M    302.0G   0% /etc/hostname
+        tmpfs                   302.1G     88.5M    302.0G   0% /run/.containerenv
+        10.0.1.16:/trident_pvc_d3fefe52_afab_4a67_b9d5_e8746083a2c9
+                                10.0G    320.0K     10.0G   0% /data
+
+
+
+# Command to Create a VM using template
+
+        ### Always pass the namespace along with the template name in the command "openshift//windows2019-template"
+
+        $ oc process openshift//windows2019-template \
+        -p VM_NAME="win2019-vm03" \
+        -p NAMESPACE="default" \
+        -p ROOT_VOLUME_NAME="win2019-vm-03-rootdisk" \
+        -p ROOT_DISK_SIZE="64Gi" \
+        -p STORAGE_CLASS="kmcs-ontap-nas1-class" \
+        -p WINDOWS_ISO_PVC="win2019-iso-shared" \
+        -p VIRTIO_WIN_IMAGE="registry.redhat.io/container-native-virtualization/virtio-win" \
+        -p CPU_CORES="4" \
+        -p CPU_SOCKETS="1" \
+        -p CPU_THREADS="1" \
+        -p MEMORY_SIZE="8Gi" \
+        -p RUN_STRATEGY="Halted" \
+        -p ENVIRONMENT="dev" \
+        | oc apply -f -
+
+
+
+# How to perform LDAP sync to pull AD group changes to openshift
+
+        bash-5.1 ~ $ vi config.yaml  #Refer LDAP sync definition "ldap-group-add-sync-config.yml"
+        bash-5.1 ~ $ vi whitelist.txt
+        bash-5.1 ~ $ cat whitelist.txt
+        CN=POC_Cluster_Admins,OU=Groups,DC=rhpoc,DC=int
+        CN=POC_Cluster_ReadOnly,OU=Groups,DC=rhpoc,DC=int
+        CN=POC_Cluster_VM,OU=Groups,DC=rhpoc,DC=int
+
+        bash-5.1 ~ $ oc adm groups sync --sync-config=config.yaml --whitelist=whitelist.txt --confirm
+        group/poc-cluster-admins
+        group/poc-cluster-readonly
+        group/poc-cluster-vm
+        bash-5.1 ~ $ 
+
+# To gather events from a given projectname
+
+        $ oc get event -n openshift-mtv
+
+# To gather all the pvc and pv information
+
+        $ oc get pvc --all-namespaces -o custom-columns='NAMESPACE:.metadata.namespace,NAME:.metadata.name,STATUS:.status.phase,STORAGECLASS:.spec.storageClassName,VOLUME:.spec.volumeName' | sort
+        $ oc get pv -o custom-columns='NAME:.metadata.name,STATUS:.status.phase,CLAIM:.spec.claimRef.namespace/.spec.claimRef.name,SC:.spec.storageClassName,RECLAIM:.spec.persistentVolumeReclaimPolicy,CAP:.spec.capacity.storage' | sort
+
+# To gather node Roles, Labels and Taints
+
+        bash-5.1 ~ $ oc describe node rhpoc-us02-mgr01 | egrep "Taints|Roles|Labels"
+                    Roles:              control-plane,master
+                    Labels:             beta.kubernetes.io/arch=amd64
+                    Taints:             node-role.kubernetes.io/master:NoSchedule
+
+
+# To list the key value pairs for nodes
+
+
+        bash-5.1 ~ $ oc get nodes -L bladetype
+        NAME                STATUS   ROLES                  AGE   VERSION    BLADETYPE
+        rhpoc-us02-mgr01    Ready    control-plane,master   43d   v1.31.13   
+        rhpoc-us02-mgr02    Ready    control-plane,master   43d   v1.31.13   
+        rhpoc-us02-mgr03    Ready    control-plane,master   43d   v1.31.13   
+        rhpoc-us02-wrkr01   Ready    worker                 42d   v1.31.13   b200m6
+        rhpoc-us02-wrkr02   Ready    worker                 42d   v1.31.13   b200m6
+        rhpoc-us02-wrkr03   Ready    worker                 45h   v1.31.13   b200m5
+        bash-5.1 ~ $
+        bash-5.1 ~ $ 
+        bash-5.1 ~ $ oc get nodes -L name,bladetype
+        NAME                STATUS   ROLES                  AGE   VERSION    NAME                BLADETYPE
+        rhpoc-us02-mgr01    Ready    control-plane,master   43d   v1.31.13   rhpoc-us02-mgr01    
+        rhpoc-us02-mgr02    Ready    control-plane,master   43d   v1.31.13   rhpoc-us02-mgr02    
+        rhpoc-us02-mgr03    Ready    control-plane,master   43d   v1.31.13   rhpoc-us02-mgr03    
+        rhpoc-us02-wrkr01   Ready    worker                 42d   v1.31.13   rhpoc-us02-wrkr01   b200m6
+        rhpoc-us02-wrkr02   Ready    worker                 42d   v1.31.13   rhpoc-us02-wrkr02   b200m6
+        rhpoc-us02-wrkr03   Ready    worker                 45h   v1.31.13   rhpoc-us02-wrkr03   b200m5
+
+
+# To identify all the running pods on a specific worker node
+
+        bash-5.1 ~ $ oc get pods --all-namespaces -o wide --field-selector spec.nodeName=rhpoc-us02-wrkr02 | grep virt-launcher
+        default  virt-launcher-win2022-vm-fwm8h                       2/2     Running     0  2d18h   10.131.0.207   rhpoc-us02-wrkr02   <none>   1/1
+        reflex   virt-launcher-reflex-22-rds01-79x7w                  1/1     Running     0  3d18h   10.131.0.79    rhpoc-us02-wrkr02   <none>   1/1
+        reflex   virt-launcher-reflex-22-rds02-bz4fk                  1/1     Running     0  3d18h   10.131.0.74    rhpoc-us02-wrkr02   <none>   1/1
+        reflex   virt-launcher-reflex-win2019-provisioned-vm1-62lkq   2/2     Running     0  3d18h   10.131.0.35    rhpoc-us02-wrkr02   <none>   1/1
+
+# To copy a file from openshift console to the local machine
+
+        bash-5.1 ~ $ ls
+        adm-must-gather.txt
+        
+        #Locate the pod that is running the web terminal
+        bash-5.1 ~ $ oc get pods -n openshift-terminal
+        NAME                                         READY   STATUS    RESTARTS   AGE
+        workspacea9cc1614216c4557-75d54964c4-qffsj   2/2     Running   0          34m
+
+        #If there are multiple workspaces, you need to identify the workspace by looking at the userid from devworkspace
+        $ oc get devworkspace -n openshift-terminal -o yaml | grep -A5 creator
+        Note: look for section controller.devfile.io/creator: 86ac7e54-f241-4333-b14a-4703e828b008 and check the uid at the bottom of each section
+
+        bash-5.1 ~ $ oc whoami a9cc1614-216c-4557-a456-1a43ebccb5b4
+          vabraham
+
+
+        #Open the Openshift windows terminal and run the below copy command
+        C:\Users\vabraham\Downloads\oc>oc cp openshift-terminal/workspacea9cc1614216c4557-75d54964c4-qffsj:/home/user/adm-must-gather.txt ./adm-must-gather.txt
+        Defaulted container "web-terminal-tooling" out of: web-terminal-tooling, web-terminal-exec
+        tar: Removing leading `/' from member names
+
+
+# To check the CPU models
+
+    # To find the processor model
+
+        sh-5.1# lscpu | grep "Model name"
+            Model name:                           Intel(R) Xeon(R) Gold 6240R CPU @ 2.40GHz
+            BIOS Model name:                      Intel(R) Xeon(R) Gold 6240R CPU @ 2.40GHz
+
+
+    
+        bash-5.1 ~ $ oc get nodes -o json | jq -r '[.items[].metadata.labels | to_entries[] | select(.key | startswith("cpu-model.node.kubevirt.io")) | .key | sub("cpu-model.node.kubevirt.io/"; "")] | unique | .[]' | sort
+            Broadwell-noTSX
+            Broadwell-noTSX-IBRS
+            Cascadelake-Server-noTSX
+            Haswell-noTSX
+            Haswell-noTSX-IBRS
+            Icelake-Server-noTSX
+            IvyBridge
+            IvyBridge-IBRS
+            Nehalem
+            Nehalem-IBRS
+            Penryn
+            SandyBridge
+            SandyBridge-IBRS
+            Skylake-Client-noTSX-IBRS
+            Skylake-Server-noTSX-IBRS
+            Westmere
+            Westmere-IBRS
+
+
+        # To run a quick check to find all the Cancadelake supported nodes
+    
+                bash-5.1 ~ $ for node in $(oc get nodes -l node-role.kubernetes.io/worker -o name | cut -d/ -f2); do
+                echo "Node: $node" oc get node $node -o json | jq -r '.metadata.labels | to_entries[] | select(.key | contains("Cascadelake")) | .key'
+                done
+                Node: rhpoc-us02-wrkr01
+                cpu-model-migration.node.kubevirt.io/Cascadelake-Server-noTSX
+                cpu-model.node.kubevirt.io/Cascadelake-Server-noTSX
+                Node: rhpoc-us02-wrkr02
+                cpu-model-migration.node.kubevirt.io/Cascadelake-Server-noTSX
+                cpu-model.node.kubevirt.io/Cascadelake-Server-noTSX
+                Node: rhpoc-us02-wrkr03
+                cpu-model-migration.node.kubevirt.io/Cascadelake-Server
+                cpu-model-migration.node.kubevirt.io/Cascadelake-Server-noTSX
+                cpu-model.node.kubevirt.io/Cascadelake-Server-noTSX
+                host-model-cpu.node.kubevirt.io/Cascadelake-Server
+                bash-5.1 ~ $ 
+             
+
+        # To run a quick check to find all the Icelake supported nodes
+                bash-5.1 ~ $ for node in $(oc get nodes -l node-role.kubernetes.io/worker -o name | cut -d/ -f2); do   echo "Node: $node";   oc get node $node -o json | jq -r '.metadata.labels | to_entries[] | select(.key | contains("Icelake")) | .key'; done
+                Node: rhpoc-us02-wrkr01
+                cpu-model-migration.node.kubevirt.io/Icelake-Server
+                cpu-model-migration.node.kubevirt.io/Icelake-Server-noTSX
+                cpu-model.node.kubevirt.io/Icelake-Server-noTSX
+                host-model-cpu.node.kubevirt.io/Icelake-Server
+                Node: rhpoc-us02-wrkr02
+                cpu-model-migration.node.kubevirt.io/Icelake-Server
+                cpu-model-migration.node.kubevirt.io/Icelake-Server-noTSX
+                cpu-model.node.kubevirt.io/Icelake-Server-noTSX
+                host-model-cpu.node.kubevirt.io/Icelake-Server
+                Node: rhpoc-us02-wrkr03
+
+
+        # To set the defaultCPU model for the cluster  
+
+            $ oc edit hyperconverged kubevirt-hyperconverged -n openshift-cnv
+                spec:
+                defaultCPUModel: "Cascadelake-Server-noTSX"
+
+            $ oc get hyperconverged kubevirt-hyperconverged -n openshift-cnv -o jsonpath='{.spec.defaultCPUModel}'
+                Cascadelake-Server-noTSX
+
+        # To check the processor model set for all the running VMs
+                oc get vmis -A -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.spec.domain.cpu.model}{"\t"}{.status.nodeName}{"\n"}{end}' \
+                | column -t
+                default  win2019-vm03                    Cascadelake-Server-noTSX  rhpoc-us02-wrkr03
+                default  win2019-vm10                    Icelake-Server-noTSX      rhpoc-us02-wrkr01
+                default  win2019-vm4                     Cascadelake-Server-noTSX  rhpoc-us02-wrkr01
+                default  win2022-vm                      Cascadelake-Server-noTSX  rhpoc-us02-wrkr03
+                default  win2022-vm1                     Icelake-Server-noTSX      rhpoc-us02-wrkr01
+                reflex   reflex-22-rds01                 host-model                rhpoc-us02-wrkr02
+                reflex   reflex-22-rds02                 host-model                rhpoc-us02-wrkr02
+                reflex   reflex-win2019-provisioned-vm1  host-model                rhpoc-us02-wrkr02
+
+    # check from the VMI pod to know the model value set on the vm pod
+        bash-5.1 ~ $ oc get vmi win2022-vm -n default -o yaml | grep model 
+            default: 
+                model: host-model (automatiically assign the host model)
+    # Check with in the VM
+       $ Get-WmiObject Win32_Processor | Select-Object Name, Description, NumberOfCores, NumberOfLogicalProcessors
+
+# How can we investigate the reasons for a VM showing status as Not Migratable?
+
+        # First identify the VMI name:
+		    bash-5.1 ~ $ oc get vmi -n default
+            NAME           AGE     PHASE     IP             NODENAME            READY
+            win2019-vm10   3m10s   Running   10.128.4.39    rhpoc-us02-wrkr03   True
+        
+	    # Check the conditions
+            bash-5.1 ~ $ oc get vmi win2019-vm10 -n default -o yaml | grep -A20 "conditions:"
+
+# To check the pvc mounts from a specific worker node
+
+        bash-5.1 ~ $ oc debug node/rhpoc-us02-wrkr02
+        sh-5.1# chroot /host
+        sh-5.1#
+        sh-5.1# mount | grep pvc
+        10.0.1.16:/trident_pvc_7727b564_438b_49e6_8714_24fbd0949e61 on /var/lib/kubelet/pods/688cf135-f4ae-4fee-a969-0408f59b2c9e/volumes/kubernetes.io~csi/
+        pvc-7727b564-438b-49e6-8714-24fbd0949e61/mount type nfs4 (rw,relatime,vers=4.2,rsize=65536,wsize=65536,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,
+        clientaddr=10.0.1.72,local_lock=none,addr=10.0.1.16)
+        10.0.1.16:/trident_pvc_8f076606_708c_41a0_9b30_bc3642b2017d on /var/lib/kubelet/pods/033cdc56-081b-49a0-bc55-79c9baf35d94/volumes/kubernetes.io~csi/
+        pvc-8f076606-708c-41a0-9b30-bc3642b2017d/mount type nfs4 (rw,relatime,vers=4.2,rsize=65536,wsize=65536,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,
+        clientaddr=10.0.1.72,local_lock=none,addr=10.0.1.16)
+
+
+# To verify the virtual IP for AP and Apps
+
+        sh-5.1# oc debug node/controlnodename
+        sh-5.1# cat /etc/keepalived/keepalived.conf
+
+        vrrp_instance kmcs-poc-rh01_API_0 {
+            virtual_ipaddress {
+                10.0.0.50/32 label vip
+            }
+
+        vrrp_instance kmcs-poc-rh01_INGRESS_0 {
+            virtual_ipaddress {
+                10.0.0.51/32 label vip
+            }
+
+
+# To check the HA Proxy config
+
+        bash-5.1 ~ $ oc exec -n openshift-kni-infra 
+        coredns-rhpoc-us02-mgr01      coredns-rhpoc-us02-wrkr02     haproxy-rhpoc-us02-mgr01      keepalived-rhpoc-us02-mgr01   keepalived-rhpoc-us02-wrkr02  replicationcontrollers/       
+        coredns-rhpoc-us02-mgr02      coredns-rhpoc-us02-wrkr03     haproxy-rhpoc-us02-mgr02      keepalived-rhpoc-us02-mgr02   keepalived-rhpoc-us02-wrkr03  services/                     
+        coredns-rhpoc-us02-mgr03      daemonsets/                   haproxy-rhpoc-us02-mgr03      keepalived-rhpoc-us02-mgr03   pods/                         statefulsets/                 
+        coredns-rhpoc-us02-wrkr01     deployments/                  jobs/                         keepalived-rhpoc-us02-wrkr01  replicasets/                  
+        
+        bash-5.1 ~ $ oc exec -n openshift-kni-infra -it haproxy-rhpoc-us02-mgr01 -- /bin/bash
+        Defaulted container "haproxy" out of: haproxy, haproxy-monitor, verify-api-int-resolvable (init)
+        
+        bash-5.1$ cat /etc/haproxy/haproxy.cfg 
+        global
+        stats socket /var/lib/haproxy/run/haproxy.sock  mode 600 level admin expose-fd listeners
+        defaults
+        maxconn 40000
+        mode    tcp
+        log     /var/run/haproxy/haproxy-log.sock local0 notice alert
+        log-format "%ci:%cp -> %fi:%fp [%t] %ft %b/%s %Tw/%Tc/%Tt %B %ts %ac/%fc/%bc/%sc/%rc %sq/%bq"
+        option  dontlognull
+        retries 3
+        timeout http-request 30s
+        timeout queue        1m
+        timeout connect      10s
+        timeout client       86400s
+        timeout server       86400s
+        timeout tunnel       86400s
+        frontend  main
+        bind :::9445 v4v6
+        default_backend masters
+        listen health_check_http_url
+        bind :::9444 v4v6
+        mode http
+        monitor-uri /haproxy_ready
+        option dontlognull
+        listen stats
+        bind localhost:29445
+        mode http
+        stats enable
+        stats hide-version
+        stats uri /haproxy_stats
+        stats refresh 30s
+        stats auth Username:Password
+        backend masters
+        timeout check 10s
+        option  httpchk GET /readyz HTTP/1.0
+        balance roundrobin
+        server rhpoc-us02-mgr01 10.0.0.61:6443 weight 1 verify none check check-ssl inter 5s fall 3 rise 1
+        server rhpoc-us02-mgr02 10.0.0.62:6443 weight 1 verify none check check-ssl inter 5s fall 3 rise 1
+        server rhpoc-us02-mgr03 10.0.0.63:6443 weight 1 verify none check check-ssl inter 5s fall 3 rise 1
+
+
+
+# Grafana and Prometheus configurations
+
+        bash-5.1 ~ $ oc get pods -n openshift-operators | grep grafana
+        grafana-instance-deployment-5ccd7455b-bmsx5               1/1     Running   0             3m24s
+        grafana-operator-controller-manager-v5-84bcfd8846-4pcct   1/1     Running   0             14m
+
+        bash-5.1 ~ $ oc get svc -n openshift-operators grafana-instance-service 
+        NAME                       TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+        grafana-instance-service   ClusterIP   172.30.140.95   <none>        3000/TCP   5m2s
+
+        bash-5.1 ~ $ oc get endpoints grafana-instance-service -n openshift-operators
+        NAME                       ENDPOINTS           AGE
+        grafana-instance-service   10.128.5.130:3000   6m19s
+
+        cat <<EOF | oc apply -f -
+        apiVersion: grafana.integreatly.org/v1beta1
+        kind: Grafana
+        metadata:
+        name: grafana-instance
+        namespace: openshift-operators
+        spec:
+        route:
+            spec:
+            termination: edge
+        EOF
+
+
+        bash-5.1 ~ $ oc get route -n openshift-operators | grep grafana
+        grafana-instance-route   grafana-instance-route-openshift-operators.apps.kmcs-poc-rh01.rhpoc.int          grafana-instance-service   3000   edge          None
+
+        bash-5.1 ~ $ oc describe route grafana-instance-route -n openshift-operators
+
+
+        bash-5.1 ~ $ oc get secret grafana-instance-admin-credentials -n openshift-operators -o jsonpath='{.data.GF_SECURITY_ADMIN_PASSWORD}' | base64 -d
+        bash-5.1 ~ $ 
+
+        bash-5.1 ~ $ TOKEN=$(oc -n openshift-monitoring extract secret/prometheus-robot-secret --to=- --keys=token)
+        # token
+        bash-5.1 ~ $ echo $TOKEN
+        bash-5.1 ~ $ 
+
+        DataSource in Grafana
+            https://prometheus-k8s-openshift-monitoring.apps.kmcs-poc-rh01.rhpoc.int
+            Skip TLS
+            Custom HTTP Headers: 
+                Header: Authorization
+                Value: Bearer <token from previous step>
+
+
+# Can-i command to validate the user privileges
+
+        bash-5.1 ~ $ oc auth can-i list virtualmachines -n finance --as=system:serviceaccount:finance:vm-finance-snapshot-sa 
+        yes
+        bash-5.1 ~ $ 
+        bash-5.1 ~ $ oc auth can-i create virtualmachinesnapshots.snapshot.kubevirt.io -n finance --as=system:serviceaccount:finance:vm-finance-snapshot-sa
+        yes
+
+# Open a shell inside the etcd pod running on a specific control-plane node
+
+        bash-5.1 ~ $ oc rsh -n openshift-etcd etcd-rhpoc-us02-mgr02
+        sh-5.1# 
+        sh-5.1# etcdctl member list -w table
+        +------------------+---------+------------------+------------------------+------------------------+------------+
+        |        ID        | STATUS  |       NAME       |       PEER ADDRS       |      CLIENT ADDRS      | IS LEARNER |
+        +------------------+---------+------------------+------------------------+------------------------+------------+
+        | 195ad5233c9d4915 | started | rhpoc-us02-mgr02 | https://10.0.0.62:2380 | https://10.0.0.62:2379 |      false |
+        | 66328f2249175d67 | started | rhpoc-us02-mgr03 | https://10.0.0.63:2380 | https://10.0.0.63:2379 |      false |
+        +------------------+---------+------------------+------------------------+------------------------+------------+
+        sh-5.1# 
+        sh-5.1# 
+        sh-5.1# etcdctl endpoint status --cluster -w table
+        +------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
+        |        ENDPOINT        |        ID        | VERSION | DB SIZE | IS LEADER | IS LEARNER | RAFT TERM | RAFT INDEX | RAFT APPLIED INDEX | ERRORS |
+        +------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
+        | https://10.0.0.62:2379 | 195ad5233c9d4915 |  3.5.18 |  232 MB |      true |      false |         9 |  136888349 |          136888349 |        |
+        | https://10.0.0.63:2379 | 66328f2249175d67 |  3.5.18 |  260 MB |     false |      false |         9 |  136888349 |          136888349 |        |
+        +------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
+        sh-5.1# 
+
+    
+# Copy files from a specific node:
+			
+		§ Go to the node debug mode to access the local file system:
+				
+				bash-5.1 ~ $ oc debug node/rhpoc-us02-wrkr01
+				Temporary namespace openshift-debug-kc5bk is created for debugging node...
+				Starting pod/rhpoc-us02-wrkr01-debug-zj255 ...
+				To use host binaries, run `chroot /host`
+				Pod IP: 10.0.0.71
+				If you don't see a command prompt, try pressing enter.
+				sh-5.1# chroot /host
+				sh-5.1# cd /var/tmp
+				sh-5.1# ls -la
+				-rw-------.  1 root root 254164444 Jan 27 14:49 sosreport-rhpoc-us02-wrkr01-04361615-2026-01-27-wwkfgki.tar.xz
+				Note: Keep this debug session active until you finish the file copy, also these files may disappear if the node reboots
+				
+		§ From a windows command line, find the respective debug pod that is running the node debug session(previous step):
+				
+				C:\Users\vabraham\Downloads\oc> oc get pods -A | grep debug
+				openshift-debug-kc5bk                              rhpoc-us02-wrkr01-debug-zj255                                     1/1     Running             0                 2m42s
+				openshift-debug-xtm6q                              rhpoc-us02-wrkr01-debug-drrjx                                     0/1     Completed           0                 19h
+				bash-5.1 ~ $ 
+				bash-5.1 ~ $ 
+	
+		§ Run the copy command to move the file from the node file system to the local filesystem:
+				Command syntax: oc -n <temp-debug-namespace> cp <temp-debug-pod>:/host/<path/filename> ./<filename>
+				
+				C:\Users\vabraham\Downloads\oc>oc -n openshift-debug-kc5bk cp rhpoc-us02-wrkr01-debug-zj255:/host/var/tmp/sosreport-rhpoc-us02-wrkr01-04361615-2026-01-27-wwkfgki.tar.xz ./sosreport-rhpoc-us02-wrkr01-04361615-2026-01-27-wwkfgki.tar.xz
+				tar: Removing leading `/' from member names
+			
+		§ Now you can exit from the node debug mode session(step1)
+				sh-5.1# exit
+				exit
+				sh-5.1# exit
+				exit
+				Removing debug pod ...
+				Temporary namespace openshift-debug-kc5bk was removed.
+				Note: You can see the temporary namespace is removed as soon as you exit from the debug node session

@@ -1,0 +1,75 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: defcon-win2019-vm5
+  namespace: default
+  labels:
+    app: defcon-win2019-vm5
+    kubevirt.io/vm: defcon-win2019-vm5
+spec:
+  runStrategy: Halted
+  dataVolumeTemplates:
+    - metadata:
+        name: defcon-win2019-vm5-rootdisk
+        # annotations:
+          # Trident per-PVC label annotation (valid JSON)
+          # trident.netapp.io/volume-labels: '{"tenant":"default","env":"dev","vm":"defcon-win2019-vm5","diskrole":"os","workload":"vm"}'
+      spec:
+        pvc:
+          accessModes:
+            - ReadWriteMany
+          resources:
+            requests:
+              storage: 64Gi
+          storageClassName: kmcs-ontap-nas1-class
+        source:
+          blank: {}
+    # ← REMOVED the installation-cdrom DataVolume - using shared PVC instead!
+  template:
+    metadata:
+      labels:
+        kubevirt.io/vm: defcon-win2019-vm5
+    spec:
+      domain:
+        cpu:
+          cores: 4
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+            - name: rootdisk
+              disk:
+                bus: virtio
+              bootOrder: 1
+            - name: installation-cdrom
+              cdrom:
+                bus: sata
+              bootOrder: 2
+            - name: windows-drivers-disk
+              cdrom:
+                bus: sata
+          interfaces:
+            - name: default
+              masquerade: {}
+              model: virtio
+        firmware:
+          bootloader:
+            bios: {}
+        machine:
+          type: q35
+        resources:
+          requests:
+            memory: 8Gi
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - name: rootdisk
+          dataVolume:
+            name: defcon-win2019-vm5-rootdisk
+        - name: installation-cdrom
+          persistentVolumeClaim:
+            claimName: win2019-iso-shared     # ← Use shared ISO PVC!
+        - name: windows-drivers-disk
+          containerDisk:
+            image: registry.redhat.io/container-native-virtualization/virtio-win

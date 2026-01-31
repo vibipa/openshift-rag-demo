@@ -1,0 +1,23 @@
+    apiVersion: nmstate.io/v1
+    kind: NodeNetworkConfigurationPolicy
+    metadata:
+      name: nncp-nfs-nic-static-ip-rhpoc-us02-wrkr02
+    spec:
+      nodeSelector:
+        name: "rhpoc-us02-wrkr02" # Target specific nodes
+      desiredState:
+        interfaces:
+          - name: eno8 # Name of your Ethernet interface
+            type: ethernet
+            state: up
+            ipv4:
+              enabled: true
+              address:
+                - ip: 10.0.1.72 # Your desired static IP
+                  prefix-length: 24
+              dhcp: false # Set to true for DHCP
+            # Optional: configure default gateway
+            # routes:
+            #   config:
+            #     - destination: 0.0.0.0/0
+            #       next-hop-address: 192.168.1.1 # Your default gateway

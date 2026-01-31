@@ -1,0 +1,47 @@
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  name: 99-master-idmapd-conf
+  labels:
+    machineconfiguration.openshift.io/role: master
+spec:
+  config:
+    ignition:
+      version: 3.4.0
+    storage:
+      files:
+        - path: /etc/idmapd.conf
+          mode: 0644
+          overwrite: true
+          contents:
+            source: >-
+              data:text/plain;charset=utf-8;base64,W0dlbmVyYWxdCkRvbWFpbiA9IHJocG9jLmludAoKW01hcHBpbmddCgpOb2JvZHktVXNlciA9IG5vYm9keQpOb2JvZHktR3JvdXAgPSBub2JvZHkK
+            verification: {}
+
+---
+# Worker pool MachineConfig
+
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  name: 99-worker-idmapd-conf
+  labels:
+    machineconfiguration.openshift.io/role: worker
+spec:
+  config:
+    ignition:
+      version: 3.4.0
+    storage:
+      files:
+        - path: /etc/idmapd.conf
+          mode: 0644
+          overwrite: true
+          contents:
+            source: >-
+              data:text/plain;charset=utf-8;base64,W0dlbmVyYWxdCkRvbWFpbiA9IHJocG9jLmludAoKW01hcHBpbmddCgpOb2JvZHktVXNlciA9IG5vYm9keQpOb2JvZHktR3JvdXAgPSBub2JvZHkK
+            verification: {}
+
+
+
+# Update domain  in /etc/idmapd.conf
+# Use Encode https://www.base64encode.org/

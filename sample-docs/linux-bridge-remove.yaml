@@ -1,0 +1,17 @@
+# This is a general policy config to remove linux bridge from a woker node. Check the name under nodeSelector and bridge name under interfaces before execting this config
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: remove-linux-bridge-nnmp-policy
+spec:
+  # Apply this policy only to specific nodes (e.g., worker nodes)
+  # Add label name=nodename for each of the worker nodes to ensure the nodeselector assigns the policy to the respective node
+  nodeSelector:
+    name: "rhpoc-us02-wrkr01"
+  desiredState:
+    interfaces:
+      # Configuration for the new Linux bridge interface
+      - name: br1
+        description: Linux bridge for NFS storage network
+        type: linux-bridge
+        state: absent

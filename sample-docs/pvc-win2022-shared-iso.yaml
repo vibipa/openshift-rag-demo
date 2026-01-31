@@ -1,0 +1,18 @@
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: win2022-iso-shared
+  namespace: default
+  annotations:
+    description: "Shared Windows Server 2022 ISO - used by all VMs"
+spec:
+  pvc:
+    accessModes:
+    - ReadOnlyMany              # ← ReadOnlyMany allows multiple VMs to use it!
+    resources:
+      requests:
+        storage: 15Gi
+    storageClassName: kmcs-ontap-nas1-class
+  source:
+    http:
+      url: "http://10.0.0.12/Upload-Site/SW_DVD9_Win_Server_STD_CORE_2022_2108.51_64Bit_English_DC_STD_MLF_X24-19220.iso" 

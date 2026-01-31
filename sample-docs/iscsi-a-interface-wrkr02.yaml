@@ -1,0 +1,27 @@
+# File: worker01-iscsi-a.yaml
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: nncp-iscsi-a-nic-static-ip-rhpoc-us02-wrkr02
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: rhpoc-us02-wrkr02
+  desiredState:
+    interfaces:
+    - name: eno6
+      description: "iSCSI-A path - 10.0.3.0/24"
+      type: ethernet
+      state: up
+      ipv4:
+        enabled: true
+        address:
+        - ip: 10.0.3.72
+          prefix-length: 24
+        dhcp: false
+      ipv6:
+        enabled: false
+      mtu: 9000
+    routes:
+      config:
+      - destination: 10.0.3.0/24
+        next-hop-interface: eno6

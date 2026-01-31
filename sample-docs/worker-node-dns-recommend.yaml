@@ -1,0 +1,42 @@
+   # This NNCP will be applied ito the worker node, making changes in the /etc/resolv.conf. DNS changes are only made at this file
+
+   apiVersion: nmstate.io/v1
+   kind: NodeNetworkConfigurationPolicy
+   metadata:
+     name: policy-dns
+   spec:
+     desiredState:
+       dns-resolver:
+         config:
+           search:
+           - kmcs-poc-rh01.rhpoc.int
+         server:
+           - 10.0.0.10 # Primary DNS
+           - 10.0.0.11 # Secondary DNS
+           - 10.0.1.16 # Data Lif1 us02-na01-n01
+           - 10.0.1.17 # Data Lif2 us02-na01-n02
+     nodeSelector:
+       # kubernetes.io/hostname: <node-name>
+       # node-role: "worker"
+       name: "rhpoc-us02-wrkr03"
+
+---
+
+
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: policy-dns
+spec:
+  nodeSelector:
+    #node-role.kubernetes.io/worker: "rhpoc-us02-wrkr03"    # target worker nodes
+    name: "rhpoc-us02-wrkr03"
+  desiredState:
+    dns-resolver:
+      config:
+        search:
+          - kmcs-poc-rh01.rhpoc.int
+        server:
+          - 10.0.0.10   # Primary DNS
+          - 10.0.0.11   # Secondary DNS
+
