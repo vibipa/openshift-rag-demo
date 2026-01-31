@@ -36,6 +36,9 @@ search_client = SearchClient(
 )
 print("Search client initialized!")
 
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
