@@ -146,8 +146,8 @@ def index_documents():
         print("No documents found to index")
 
 if __name__ == "__main__":
-    print("Creating search index...")
-    create_index()
+    #print("Creating search index...")
+    #create_index()
     
     print("\nIndexing documents...")
     index_documents()
