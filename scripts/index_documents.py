@@ -112,11 +112,16 @@ def index_documents():
     docs_path = Path(DOCS_FOLDER)
     documents = []
     
-    for file_path in docs_path.glob("*.md"):
-        print(f"Processing: {file_path.name}")
-        
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
+    SUPPORTED_EXTENSIONS = [".md", ".txt", ".yaml", ".yml"]
+
+    for file_path in docs_path.glob("*"):
+        if file_path.suffix.lower() not in SUPPORTED_EXTENSIONS:
+        continue
+
+    print(f"Processing: {file_path.name}")
+
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+        content = f.read()
         
         # Extract title from first heading or use filename
         title = file_path.stem.replace('-', ' ').title()
@@ -153,7 +158,6 @@ if __name__ == "__main__":
     index_documents()
     
     print("\n✓ Indexing complete!")
-EOF
 
 # Now run it
 # python scripts/index_documents.py
