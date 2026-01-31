@@ -64,7 +64,8 @@ def chat():
         search_results = search_client.search(
             search_text=user_message,
             vector_queries=[vector_query],
-            select=["content", "title", "filepath"],
+            #select=["content", "title", "filepath"],
+            select=["snippet", "blob_url", "id"],
             top=3
         )
 
