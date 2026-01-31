@@ -116,12 +116,12 @@ def index_documents():
 
     for file_path in docs_path.glob("*"):
         if file_path.suffix.lower() not in SUPPORTED_EXTENSIONS:
-        continue
+            continue
 
-    print(f"Processing: {file_path.name}")
+        print(f"Processing: {file_path.name}")
 
         with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-        content = f.read()
+            content = f.read()
         
         # Extract title from first heading or use filename
         title = file_path.stem.replace('-', ' ').title()
