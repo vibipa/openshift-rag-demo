@@ -70,15 +70,23 @@ def chat():
         )
 
         # Convert to list to inspect results
+        #result_list = list(search_results)
+        #print(f"=== RETRIEVED {len(result_list)} DOCUMENTS ===")
         result_list = list(search_results)
         print(f"=== RETRIEVED {len(result_list)} DOCUMENTS ===")
         
         # Build context with better formatting
+        #context_parts = []
+        #for idx, r in enumerate(result_list):
+        #    source = r.get('filepath', 'NO_FILEPATH')
+        #    title = r.get('title', 'NO_TITLE')
+        #    content = r.get('content', 'NO_CONTENT')[:1000]
+        
         context_parts = []
         for idx, r in enumerate(result_list):
-            source = r.get('filepath', 'NO_FILEPATH')
-            title = r.get('title', 'NO_TITLE')
-            content = r.get('content', 'NO_CONTENT')[:1000]
+            source = r.get('blob_url', 'NO_FILEPATH')  # CHANGED
+            title = r.get('blob_url', 'NO_TITLE')  # CHANGED
+            content = r.get('snippet', 'NO_CONTENT')[:1000]  # CHANGED
             
             print(f"\nDoc {idx+1}:")
             print(f"  Filepath: {source}")
