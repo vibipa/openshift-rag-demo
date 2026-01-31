@@ -64,8 +64,8 @@ def chat():
         search_results = search_client.search(
             search_text=user_message,
             vector_queries=[vector_query],
-            #select=["content", "title", "filepath"],
-            select=["snippet", "blob_url", "uid"],
+            select=["content", "title", "filepath"],
+            #select=["snippet", "blob_url", "uid"],
             top=3
         )
 
@@ -76,17 +76,17 @@ def chat():
         print(f"=== RETRIEVED {len(result_list)} DOCUMENTS ===")
         
         # Build context with better formatting
-        #context_parts = []
-        #for idx, r in enumerate(result_list):
-        #    source = r.get('filepath', 'NO_FILEPATH')
-        #    title = r.get('title', 'NO_TITLE')
-        #    content = r.get('content', 'NO_CONTENT')[:1000]
-        
         context_parts = []
         for idx, r in enumerate(result_list):
-            source = r.get('blob_url', 'NO_FILEPATH')  # CHANGED
-            title = r.get('blob_url', 'NO_TITLE')  # CHANGED
-            content = r.get('snippet', 'NO_CONTENT')[:1000]  # CHANGED
+            source = r.get('filepath', 'NO_FILEPATH')
+            title = r.get('title', 'NO_TITLE')
+            content = r.get('content', 'NO_CONTENT')[:1000]
+        
+        #context_parts = []
+        #for idx, r in enumerate(result_list):
+        #    source = r.get('blob_url', 'NO_FILEPATH')  # CHANGED
+        #    title = r.get('blob_url', 'NO_TITLE')  # CHANGED
+        #    content = r.get('snippet', 'NO_CONTENT')[:1000]  # CHANGED
             
             print(f"\nDoc {idx+1}:")
             print(f"  Filepath: {source}")
