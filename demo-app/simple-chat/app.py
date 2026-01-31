@@ -65,7 +65,7 @@ def chat():
             search_text=user_message,
             vector_queries=[vector_query],
             #select=["content", "title", "filepath"],
-            select=["snippet", "blob_url", "id"],
+            select=["snippet", "blob_url", "uid"],
             top=3
         )
 
