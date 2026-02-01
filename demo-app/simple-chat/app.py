@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import os
 import traceback
+import markdown 
 from dotenv import load_dotenv
 from openai import AzureOpenAI
 from azure.search.documents import SearchClient
@@ -102,7 +103,17 @@ def chat():
         response = openai_client.chat.completions.create(
             model=os.getenv("GPT4_DEPLOYMENT"),
             messages=[
-                {"role": "system", "content": "You are an OpenShift expert. Use the provided context from our documentation and YAML configurations to provide accurate, specific answers. Always reference the source files when answering."},
+                {"role": "system", "content": """You are an OpenShift expert. Use the provided context from our documentation and YAML configurations to provide accurate, specific answers.
+
+Format your responses clearly:
+- Use numbered lists for sequential steps (1. 2. 3.)
+- Use bullet points for non-sequential items (-, *)
+- Add blank lines between sections
+- Use **bold** for important terms
+- Use `code blocks` for commands and YAML snippets
+- Always reference the source files when answering
+
+Keep responses well-structured and easy to read."""},
                 {"role": "user", "content": f"Context from our OpenShift documentation:\n\n{context}\n\nQuestion: {user_message}"}
             ],
             temperature=0.3,
@@ -111,8 +122,14 @@ def chat():
 
         answer = response.choices[0].message.content
         print(f"=== GENERATED ANSWER ===\n{answer[:200]}...\n")
+        
+        # Convert markdown to HTML for better formatting
+        answer_html = markdown.markdown(
+            answer,
+            extensions=['nl2br', 'fenced_code']  # Preserve line breaks and code blocks
+        )
 
-        return jsonify({'answer': answer})
+        return jsonify({'answer': answer_html})
 
     except Exception as e:
         print(f"ERROR: {str(e)}")

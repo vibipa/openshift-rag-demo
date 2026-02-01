@@ -103,12 +103,85 @@
             background: #ccc;
             cursor: not-allowed;
         }
+        /* Better line spacing and formatting for assistant messages */
+    .message-content {
+        line-height: 1.6;
+        white-space: normal;
+        }
+
+        /* Paragraph spacing */
+        .message-content p {
+            margin: 10px 0;
+        }
+
+        /* List formatting (numbered and bulleted) */
+        .message-content ul,
+        .message-content ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+
+        .message-content li {
+            margin: 5px 0;
+        }
+
+        /* Inline code formatting */
+        .message-content code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #c7254e;
+        }
+
+        /* Code block formatting */
+        .message-content pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 12px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        .message-content pre code {
+            background-color: transparent;
+            padding: 0;
+            color: #f8f8f2;
+        }
+
+        /* Bold text */
+        .message-content strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        /* Headings in responses */
+        .message-content h1,
+        .message-content h2,
+        .message-content h3 {
+            margin: 15px 0 10px 0;
+            color: #2c3e50;
+        }
+
+        .message-content h1 {
+            font-size: 1.4em;
+        }
+
+        .message-content h2 {
+            font-size: 1.2em;
+        }
+
+        .message-content h3 {
+            font-size: 1.1em;
+        }
     </style>
 </head>
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <h1>🚀 OpenShift Operations Assistant</h1>
+            <h1>🚀 OpenShift Operations Assistant 🤖</h1>
         </div>
         <div class="chat-messages" id="messages"></div>
         <div class="chat-input">
@@ -129,8 +202,14 @@
             
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
-            contentDiv.textContent = content;
-            
+            // contentDiv.textContent = content;  // ❌ CHANGE THIS LINE            
+            // Use innerHTML for assistant messages (supports formatting)
+            // Use textContent for user messages (security - no HTML injection)
+            if (isUser) {
+                contentDiv.textContent = content;
+            } else {
+                contentDiv.innerHTML = content;
+            }            
             messageDiv.appendChild(contentDiv);
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
