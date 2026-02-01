@@ -1,0 +1,149 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: windows11-template
+  namespace: openshift #It is mandatory to set the namespace for templates as openshift to use them across all namespaces
+  labels:
+    template.kubevirt.io/type: vm
+  annotations:
+    description: "Template for creating Windows 11 VMs with vTPM and UEFI"
+    tags: "kubevirt,virtualmachine,windows,windows11"
+    iconClass: "icon-windows"
+    openshift.io/display-name: "Windows 11 VM"
+    openshift.io/documentation-url: "https://docs.openshift.com/container-platform/latest/virt/about-virt.html"
+    openshift.io/provider-display-name: "Red Hat, Inc."
+    template.openshift.io/bindable: "false"
+objects:
+  - apiVersion: kubevirt.io/v1
+    kind: VirtualMachine
+    metadata:
+      name: ${VM_NAME}
+      namespace: ${NAMESPACE}
+      labels:
+        app: ${VM_NAME}
+        kubevirt.io/vm: ${VM_NAME}
+        os: windows-11
+        environment: ${ENVIRONMENT}
+    spec:
+      runStrategy: ${RUN_STRATEGY}
+      dataVolumeTemplates:
+        - metadata:
+            name: ${ROOT_VOLUME_NAME}
+          spec:
+            pvc:
+              accessModes:
+                - ReadWriteMany
+              resources:
+                requests:
+                  storage: ${ROOT_DISK_SIZE}
+              storageClassName: ${STORAGE_CLASS}
+            source:
+              blank: {}
+      template:
+        metadata:
+          labels:
+            kubevirt.io/vm: ${VM_NAME}
+            os: windows-11
+        spec:
+          domain:
+            cpu:
+              cores: ${{CPU_CORES}}
+              sockets: ${{CPU_SOCKETS}}
+              threads: ${{CPU_THREADS}}
+            features:
+              smm:
+                enabled: true # Required for UEFI SecureBoot
+            devices:
+              disks:
+                - name: installation-cdrom
+                  cdrom:
+                    bus: sata
+                  bootOrder: 1
+                - name: rootdisk
+                  disk:
+                    bus: virtio
+                  bootOrder: 2
+                - name: windows-drivers-disk
+                  cdrom:
+                    bus: sata
+              interfaces:
+                - name: default
+                  masquerade: {}
+                  model: virtio
+              tpm:
+                persistent: true
+            firmware:
+              bootloader:
+                efi:
+                  persistent: true
+            machine:
+              type: q35
+            resources:
+              requests:
+                memory: ${MEMORY_SIZE}
+          networks:
+            - name: default
+              pod: {}
+          volumes:
+            - name: rootdisk
+              dataVolume:
+                name: ${ROOT_VOLUME_NAME}
+            - name: installation-cdrom
+              persistentVolumeClaim:
+                claimName: ${WINDOWS_ISO_PVC}
+            - name: windows-drivers-disk
+              containerDisk:
+                image: ${VIRTIO_WIN_IMAGE}
+parameters:
+  - name: VM_NAME
+    description: "Name of the Virtual Machine"
+    required: true
+    value: "win11-vm"
+  - name: NAMESPACE
+    description: "Namespace where the VM will be created"
+    required: true
+    value: "default"
+  - name: ROOT_VOLUME_NAME
+    description: "Name of the root disk DataVolume"
+    required: true
+    value: "win11-rootdisk"
+  - name: ROOT_DISK_SIZE
+    description: "Size of the root disk"
+    required: true
+    value: "64Gi"
+  - name: STORAGE_CLASS
+    description: "StorageClass for the root disk"
+    required: true
+    value: "comp-ontap-nas1-class"
+  - name: WINDOWS_ISO_PVC
+    description: "Name of the shared Windows 11 ISO PVC"
+    required: true
+    value: "win11-iso-shared"
+  - name: VIRTIO_WIN_IMAGE
+    description: "VirtIO Windows drivers container image"
+    required: true
+    value: "registry.redhat.io/container-native-virtualization/virtio-win"
+  - name: CPU_CORES
+    description: "Number of CPU cores"
+    required: true
+    value: "4"
+  - name: CPU_SOCKETS
+    description: "Number of CPU sockets"
+    required: true
+    value: "1"
+  - name: CPU_THREADS
+    description: "Number of threads per core"
+    required: true
+    value: "1"
+  - name: MEMORY_SIZE
+    description: "Amount of memory (e.g., 8Gi, 16Gi)"
+    required: true
+    value: "8Gi"
+  - name: RUN_STRATEGY
+    description: "Run strategy for the VM (Halted, RerunOnFailure, Always, Manual)"
+    required: true
+    value: "Halted"
+  - name: ENVIRONMENT
+    description: "Environment label (dev, test, prod)"
+    required: false
+    value: "dev"

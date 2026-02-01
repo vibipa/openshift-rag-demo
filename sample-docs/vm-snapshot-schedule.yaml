@@ -1,0 +1,109 @@
+# To schedule daily VM snapshots for all VMs in finance namespace. The script will skip those machines with vTPM/Persistent EFI enabled
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vm-finance-snapshot-daily
+  namespace: finance
+spec:
+  schedule: "0 20 * * *" # Run at 8 PM daily
+  timeZone: "America/New_York"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          serviceAccountName: vm-finance-snapshot-sa # Refer vm-snapshot-schedule-sa.yaml for this service account definition
+          restartPolicy: Never
+          containers:
+            - name: snapshot
+              image: quay.io/openshift/origin-cli:latest
+              command: ["/bin/bash", "-c"]
+              args:
+                - |
+                  set -euo pipefail
+                  
+                  echo "=========================================="
+                  echo "VM Snapshot Job Started: $(date)"
+                  echo "Namespace: finance"
+                  echo "=========================================="
+                  
+                  TS="$(date +%Y%m%d-%H%M%S)"
+                  
+                  # Get all VMs
+                  echo "Fetching VMs in finance namespace..."
+                  VMS=$(oc get vm -n finance -o jsonpath='{.items[*].metadata.name}')
+                  
+                  if [ -z "$VMS" ]; then
+                    echo "WARNING: No VMs found in finance namespace"
+                    exit 0
+                  fi
+                  
+                  echo "Found VMs: $VMS"
+                  echo "=========================================="
+                  
+                  SUCCESS_COUNT=0
+                  FAIL_COUNT=0
+                  SKIP_COUNT=0
+                  
+                  for vm in $VMS; do
+                    echo "Processing VM: ${vm}"
+                    
+                    # Check if VM has vTPM
+                    HAS_VTPM=$(oc get vm ${vm} -n finance -o jsonpath='{.spec.template.spec.domain.devices.tpm}')
+                    
+                    # Check if VM has persistent EFI
+                    HAS_PERSISTENT_EFI=$(oc get vm ${vm} -n finance -o jsonpath='{.spec.template.spec.domain.firmware.bootloader.efi.persistent}')
+                    
+                    if [ ! -z "$HAS_VTPM" ] || [ "$HAS_PERSISTENT_EFI" == "true" ]; then
+                      echo "⊘ SKIPPED: VM ${vm} has vTPM or persistent EFI (snapshots not supported)"
+                      SKIP_COUNT=$((SKIP_COUNT + 1))
+                      echo "---"
+                      continue
+                    fi
+                    
+                    SNAPSHOT_NAME="${vm}-snapshot-${TS}"
+                    
+                    # Create snapshot
+                    if cat <<EOF | oc apply -f -
+                  apiVersion: snapshot.kubevirt.io/v1beta1
+                  kind: VirtualMachineSnapshot
+                  metadata:
+                    name: ${SNAPSHOT_NAME}
+                    namespace: finance
+                    labels:
+                      vm-name: ${vm}
+                      snapshot-type: scheduled
+                  spec:
+                    source:
+                      apiGroup: kubevirt.io
+                      kind: VirtualMachine
+                      name: ${vm}
+                  EOF
+                    then
+                      echo "✓ Successfully created snapshot: ${SNAPSHOT_NAME}"
+                      SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+                    else
+                      echo "✗ Failed to create snapshot for VM: ${vm}"
+                      FAIL_COUNT=$((FAIL_COUNT + 1))
+                    fi
+                    echo "---"
+                  done
+                  
+                  echo "=========================================="
+                  echo "Snapshot Job Summary:"
+                  echo "  Total VMs found: $(echo $VMS | wc -w)"
+                  echo "  Skipped (vTPM/EFI): ${SKIP_COUNT}"
+                  echo "  Successful snapshots: ${SUCCESS_COUNT}"
+                  echo "  Failed snapshots: ${FAIL_COUNT}"
+                  echo "  Timestamp: ${TS}"
+                  echo "  Completed at: $(date)"
+                  echo "=========================================="
+                  
+                  if [ $FAIL_COUNT -gt 0 ]; then
+                    echo "WARNING: Some snapshots failed"
+                    exit 1
+                  fi
+                  
+                  exit 0
