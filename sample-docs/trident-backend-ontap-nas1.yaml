@@ -1,0 +1,31 @@
+# If you want to create both secret and the trident backend then run the entire defintion
+# if you want to separately create the secret and then create the trident then run the below two defitions separately
+apiVersion: v1 
+kind: Secret 
+metadata: 
+  name: comp-ontap-secret-nas1 
+  Type: Opaque
+stringData: 
+  username: vsadmin #SVM admin only
+  password: xxx
+
+---
+# Test
+
+apiVersion: trident.netapp.io/v1 
+kind: TridentBackendConfig
+metadata: 
+  name: comp-ontap-nas1-prod
+spec: 
+  version: 1 
+  storageDriverName: ontap-nas 
+  managementLIF: 10.100.0.210   
+  dataLIF: 10.100.1.16
+  svm: REDHATPOCHET
+  #limitAggregateUsage: 50% 
+  autoExportCIDRs: 
+    - 10.100.1.0/24
+  autoExportPolicy: true 
+  credentials: 
+    # Secret reference to "trident-backend-ontap-nas1-secret.yaml"
+    name: comp-ontap-secret-nas1

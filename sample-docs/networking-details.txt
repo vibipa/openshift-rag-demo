@@ -18,12 +18,12 @@ Networking Preparations
 
 	bash-5.1 ~ $ oc get nodes -o wide
 	NAME                STATUS   ROLES                  AGE   VERSION    INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                                                KERNEL-VERSION                 CONTAINER-RUNTIME
-	rhpoc-mgr01    Ready    control-plane,master   9d    v1.31.13   10.100.0.61     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
-	rhpoc-mgr02    Ready    control-plane,master   88d   v1.31.13   10.100.0.62     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
-	rhpoc-mgr03    Ready    control-plane,master   88d   v1.31.13   10.100.0.63     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
-	rhpoc-wrkr01   Ready    worker                 23d   v1.31.13   10.100.0.71     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
-	rhpoc-wrkr02   Ready    worker                 17d   v1.31.13   10.100.0.72     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
-	rhpoc-wrkr03   Ready    worker                 17d   v1.31.13   10.100.0.73     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
+	rhpoc-us02-mgr01    Ready    control-plane,master   9d    v1.31.13   10.0.0.61     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
+	rhpoc-us02-mgr02    Ready    control-plane,master   88d   v1.31.13   10.0.0.62     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
+	rhpoc-us02-mgr03    Ready    control-plane,master   88d   v1.31.13   10.0.0.63     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
+	rhpoc-wrkr01   Ready    worker                 23d   v1.31.13   10.0.0.71     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
+	rhpoc-wrkr02   Ready    worker                 17d   v1.31.13   10.0.0.72     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
+	rhpoc-wrkr03   Ready    worker                 17d   v1.31.13   10.0.0.73     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
 	bash-5.1 ~ $ ^C
 	bash-5.1 ~ $ 
 	 
@@ -59,13 +59,13 @@ Networking Preparations
 		▪ Storage(NFS)
 			• UCS Failover NIC: en08
 			• Set IP Address:
-				- rhpoc-wrkr[01-03] -> eno8 -> 10.100.1.71-73
+				- rhpoc-wrkr[01-03] -> eno8 -> 10.0.1.71-73
 			• Set Jumbo frames: 9000
 			• NFS mounts through PVC
 		▪ Storage(iSCSI)
 			• UCS NIC: en06 and eno7
 			• Set IP Address: 
-				- rhpoc-wrkr[01-03] -> eno6 -> 10.100.3.71-73
-				- rhpoc-wrkr[01-03] -> eno7 -> 10.100.4.71-73
+				- rhpoc-wrkr[01-03] -> eno6 -> 10.0.3.71-73
+				- rhpoc-wrkr[01-03] -> eno7 -> 10.0.4.71-73
 			• Set Jumbo frames: 9000
 			• NFS mounts through PVC
