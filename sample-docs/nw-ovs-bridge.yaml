@@ -6,13 +6,13 @@ metadata:
 spec: 
   nodeSelector: 
     # Use specific node name if the policy is for that node
-    # name: "rhpoc-us02-wrkr01"
+    
     # Use node-role to push the policy to all the worker nodes. Make this change after adding eno9 to all the worker nodes
     node-role: "worker"
   desiredState: 
     interfaces: 
       - name: br-vm-network 
-        description: VM Traffic bridge with eno6 as a port
+        description: VM Traffic bridge with eno9 as a port
         type: ovs-bridge 
         state: up
         mtu: 9000

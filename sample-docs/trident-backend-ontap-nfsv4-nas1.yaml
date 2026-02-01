@@ -3,7 +3,7 @@
 apiVersion: v1 
 kind: Secret 
 metadata: 
-  name: kmcs-ontap-secret-nas1 
+  name: comp-ontap-secret-nas1 
   Type: Opaque
 stringData: 
   username: vsadmin #SVM admin only
@@ -14,17 +14,17 @@ stringData:
 apiVersion: trident.netapp.io/v1 
 kind: TridentBackendConfig
 metadata: 
-  name: kmcs-ontap-nas1-prod
+  name: comp-ontap-nas1-prod
 spec: 
   version: 1 
   storageDriverName: ontap-nas 
-  managementLIF: REDHATPOC-MGMT.rhpoc.int # 10.0.0.210 is the mgmt lif  
-  dataLIF: REDHATPOCHET.rhpoc.int # 10.0.1.16, 10.0.1.17, 10.0.0.21, 10.0.0.22 are the data lifs associated with this DNS zone
+  managementLIF: REDHATPOC-MGMT.rhpoc.int # 10.100.0.210 is the mgmt lif  
+  dataLIF: REDHATPOCHET.rhpoc.int # 10.100.1.16, 10.100.1.17, 10.100.0.21, 10.100.0.22 are the data lifs associated with this DNS zone
   svm: REDHATPOCHET
   #limitAggregateUsage: 50% 
   autoExportCIDRs: 
-    - 10.0.1.0/24
+    - 10.100.1.0/24
   autoExportPolicy: true 
   credentials: 
     # Secret reference to "trident-backend-ontap-nas1-secret.yaml"
-    name: kmcs-ontap-secret-nas1
+    name: comp-ontap-secret-nas1

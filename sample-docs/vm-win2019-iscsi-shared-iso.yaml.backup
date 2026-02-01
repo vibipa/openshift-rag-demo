@@ -1,44 +1,36 @@
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: win2019-vm4
-  namespace: default
+  name: fin-iscsi-vm01
+  namespace: finance
   labels:
-    app: win2019-vm4
-    kubevirt.io/vm: win2019-vm4
+    app: fin-iscsi-vm01
+    kubevirt.io/vm: fin-iscsi-vm01
 spec:
   runStrategy: Halted
   dataVolumeTemplates:
     - metadata:
-        name: win2019-vm4-rootdisk
+        name: fin-iscsi-vm01-rootdisk
+        # annotations:
+          # trident.netapp.io/volume-labels: '{"tenant":"finance","env":"prod","vm":"fin-iscsi-vm01","diskrole":"os","workload":"vm"}'
       spec:
         pvc:
           accessModes:
-            - ReadWriteMany
+            - ReadWriteMany    # ✅ Changed to RWX
+          volumeMode: Block
           resources:
             requests:
               storage: 64Gi
-          storageClassName: comp-ontap-nas1-class
+          storageClassName: comp-ontap-iscsi1-gold-class
         source:
           blank: {}
-    - metadata:
-        name: win2019-installation-cdrom
-      spec:
-        pvc:
-          accessModes:
-            - ReadWriteMany
-          resources:
-            requests:
-              storage: 15Gi
-          storageClassName: comp-ontap-nas1-class
-        source:
-          http:
-            url: "http://10.100.0.12/Upload-Site/SW_DVD9_Win_Server_STD_CORE_2019_1809.19_64Bit_English_DC_STD_MLF_X23-31944.iso"    # ← Put your URL here
   template:
     metadata:
       labels:
-        kubevirt.io/vm: win2019-vm
+        kubevirt.io/vm: fin-iscsi-vm01
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: rhpoc-us02-wrkr02
       domain:
         cpu:
           cores: 4
@@ -61,9 +53,6 @@ spec:
             - name: default
               masquerade: {}
               model: virtio
-          channels:
-            - name: qemu-guest-agent
-              type: unix
         firmware:
           bootloader:
             bios: {}
@@ -78,10 +67,10 @@ spec:
       volumes:
         - name: rootdisk
           dataVolume:
-            name: win2019-rootdisk
+            name: fin-iscsi-vm01-rootdisk
         - name: installation-cdrom
-          dataVolume:
-            name: win2019-installation-cdrom
+          persistentVolumeClaim:
+            claimName: fin-win2019-iso-shared
         - name: windows-drivers-disk
           containerDisk:
             image: registry.redhat.io/container-native-virtualization/virtio-win

@@ -1,10 +1,10 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: kmcs-ontap-iscsi1-gold-class #Gold or SSD class
+  name: comp-ontap-iscsi1-gold-class #Gold or SSD class
 provisioner: csi.trident.netapp.io
 parameters:
-  storagePools: "kmcs-ontap-iscsi1-prod:us02_na01_n0[12]_ssd1" # aggr, aggr2 "kmcs-ontap-nas1-prod:.*;kmcs-ontap-nas2-prod:.*" 
+  storagePools: "comp-ontap-iscsi1-prod:us02_na01_n0[12]_ssd1" # aggr, aggr2 "comp-ontap-nas1-prod:.*;comp-ontap-nas2-prod:.*" 
   backendType: "ontap-san"
 mountOptions:
   - discard
@@ -23,10 +23,10 @@ spec:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: kmcs-ontap-iscsi1-silver-class #Silver or SATA class
+  name: comp-ontap-iscsi1-silver-class #Silver or SATA class
 provisioner: csi.trident.netapp.io
 parameters:
-  storagePools: "kmcs-ontap-iscsi1-prod:us02_na01_n04_sata4_e" # aggr, aggr2 "kmcs-ontap-nas1-prod:.*;kmcs-ontap-nas2-prod:.*" 
+  storagePools: "comp-ontap-iscsi1-prod:us02_na01_n04_sata4_e" # aggr, aggr2 "comp-ontap-nas1-prod:.*;comp-ontap-nas2-prod:.*" 
   fsType: "ext4"
   backendType: "ontap-san"
 mountOptions:

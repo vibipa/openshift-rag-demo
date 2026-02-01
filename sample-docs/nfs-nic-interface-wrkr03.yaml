@@ -1,10 +1,10 @@
     apiVersion: nmstate.io/v1
     kind: NodeNetworkConfigurationPolicy
     metadata:
-      name: nncp-nfs-nic-static-ip-rhpoc-us02-wrkr03
+      name: nncp-nfs-nic-static-ip-rhpoc-wrkr03
     spec:
       nodeSelector:
-        name: "rhpoc-us02-wrkr03" # Target specific nodes
+        name: "rhpoc-wrkr03" # Target specific nodes
         #bladetype: "b200m5"
       desiredState:
         interfaces:
@@ -14,7 +14,7 @@
             ipv4:
               enabled: true
               address:
-                - ip: 10.0.1.73 # Your desired static IP
+                - ip: 10.100.1.73 # Your desired static IP
                   prefix-length: 24
               dhcp: false # Set to true for DHCP
             # Optional: configure default gateway

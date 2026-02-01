@@ -3,7 +3,7 @@
 apiVersion: v1 
 kind: Secret 
 metadata: 
-  name: kmcs-ontap-secret-nas1 
+  name: comp-ontap-secret-nas1 
   Type: Opaque
 stringData: 
   username: vsadmin #SVM admin only
@@ -15,17 +15,17 @@ stringData:
 apiVersion: trident.netapp.io/v1 
 kind: TridentBackendConfig
 metadata: 
-  name: kmcs-ontap-nas1-prod
+  name: comp-ontap-nas1-prod
 spec: 
   version: 1 
   storageDriverName: ontap-nas 
-  managementLIF: 10.0.0.210   
-  dataLIF: 10.0.1.16
+  managementLIF: 10.100.0.210   
+  dataLIF: 10.100.1.16
   svm: REDHATPOCHET
   #limitAggregateUsage: 50% 
   autoExportCIDRs: 
-    - 10.0.1.0/24
+    - 10.100.1.0/24
   autoExportPolicy: true 
   credentials: 
     # Secret reference to "trident-backend-ontap-nas1-secret.yaml"
-    name: kmcs-ontap-secret-nas1
+    name: comp-ontap-secret-nas1

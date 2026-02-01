@@ -21,7 +21,7 @@ spec:
           resources:
             requests:
               storage: 64Gi
-          storageClassName: kmcs-ontap-nas1-class
+          storageClassName: comp-ontap-nas1-class
         source:
           blank: {}
     # ← REMOVED the installation-cdrom DataVolume - using shared PVC instead!

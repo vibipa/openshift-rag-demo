@@ -1,18 +1,18 @@
 apiVersion: trident.netapp.io/v1
 kind: TridentBackendConfig
 metadata:
-  name: kmcs-ontap-iscsi1-prod
+  name: comp-ontap-iscsi1-prod
   namespace: trident
 spec:
   version: 1
   storageDriverName: ontap-san
-  backendName: kmcs-ontap-iscsi1-prod
-  managementLIF: 10.0.0.210  # e.g., 10.0.0.20
+  backendName: comp-ontap-iscsi1-prod
+  managementLIF: 10.100.0.210  # e.g., 10.100.0.20
   svm: REDHATPOCHET
   credentials:
     # Secret reference to "trident-backend-ontap-nas1-secret.yaml"
-    name: kmcs-ontap-secret-nas1
-  storagePrefix: kmcs_iscsi_
+    name: comp-ontap-secret-nas1
+  storagePrefix: comp_iscsi_
   limitVolumeSize: 10Ti
   defaults:
     spaceReserve: none

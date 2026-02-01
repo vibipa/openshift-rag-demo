@@ -7,7 +7,7 @@ spec:
   # Apply this policy only to specific nodes (e.g., worker nodes)
   # Add label name=nodename for each of the worker nodes to ensure the nodeselector assigns the policy to the respective node
   nodeSelector:
-    name: "rhpoc-us02-wrkr01"
+    name: "rhpoc-wrkr01"
   desiredState:
     interfaces:
       # Configuration for the new Linux bridge interface

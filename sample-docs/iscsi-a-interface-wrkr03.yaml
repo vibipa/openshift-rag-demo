@@ -2,20 +2,20 @@
 apiVersion: nmstate.io/v1
 kind: NodeNetworkConfigurationPolicy
 metadata:
-  name: nncp-iscsi-a-nic-static-ip-rhpoc-us02-wrkr03
+  name: nncp-iscsi-a-nic-static-ip-rhpoc-wrkr03
 spec:
   nodeSelector:
-    kubernetes.io/hostname: rhpoc-us02-wrkr03
+    kubernetes.io/hostname: rhpoc-wrkr03
   desiredState:
     interfaces:
     - name: ens5f1
-      description: "iSCSI-A path - 10.0.3.0/24"
+      description: "iSCSI-A path - 10.100.3.0/24"
       type: ethernet
       state: up
       ipv4:
         enabled: true
         address:
-        - ip: 10.0.3.73
+        - ip: 10.100.3.73
           prefix-length: 24
         dhcp: false
       ipv6:
@@ -23,5 +23,5 @@ spec:
       mtu: 9000
     routes:
       config:
-      - destination: 10.0.3.0/24
+      - destination: 10.100.3.0/24
         next-hop-interface: ens5f1

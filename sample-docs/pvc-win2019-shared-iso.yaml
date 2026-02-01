@@ -12,10 +12,10 @@ spec:
     resources:
       requests:
         storage: 15Gi
-    storageClassName: kmcs-ontap-nas1-class
+    storageClassName: comp-ontap-nas1-class
   source:
     http:
-      url: "http://10.0.0.12/Upload-Site/SW_DVD9_Win_Server_STD_CORE_2019_1809.19_64Bit_English_DC_STD_MLF_X23-31944.iso"
+      url: "http://10.100.0.12/Upload-Site/SW_DVD9_Win_Server_STD_CORE_2019_1809.19_64Bit_English_DC_STD_MLF_X23-31944.iso"
 
 ---
 # create Win11 CD ROM
@@ -33,10 +33,10 @@ spec:
     resources:
       requests:
         storage: 15Gi
-    storageClassName: kmcs-ontap-nas1-class
+    storageClassName: comp-ontap-nas1-class
   source:
     http:
-      url: "http://10.0.0.12/Upload-Site/SW_DVD9_Win_Pro_11_23H2_64BIT_English_Pro_Ent_EDU_N_MLF_X23-59562.iso"
+      url: "http://10.100.0.12/Upload-Site/SW_DVD9_Win_Pro_11_23H2_64BIT_English_Pro_Ent_EDU_N_MLF_X23-59562.iso"
 
 ---
 # create Win2025 CD ROM
@@ -54,7 +54,7 @@ spec:
     resources:
       requests:
         storage: 15Gi
-    storageClassName: kmcs-ontap-nas1-class
+    storageClassName: comp-ontap-nas1-class
   source:
     http:
-      url: "http://10.0.0.12/Upload-Site/SW_DVD9_Win_Server_STD_CORE_2025_24H2_64Bit_English_DC_STD_MLF_X23-81891.iso"
+      url: "http://10.100.0.12/Upload-Site/SW_DVD9_Win_Server_STD_CORE_2025_24H2_64Bit_English_DC_STD_MLF_X23-81891.iso"

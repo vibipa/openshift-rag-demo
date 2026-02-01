@@ -2,20 +2,20 @@
 apiVersion: nmstate.io/v1
 kind: NodeNetworkConfigurationPolicy
 metadata:
-  name: nncp-iscsi-b-nic-static-ip-rhpoc-us02-wrkr01
+  name: nncp-iscsi-b-nic-static-ip-rhpoc-wrkr01
 spec:
   nodeSelector:
-    kubernetes.io/hostname: rhpoc-us02-wrkr01
+    kubernetes.io/hostname: rhpoc-wrkr01
   desiredState:
     interfaces:
     - name: eno7
-      description: "iSCSI-B path - 10.0.4.0/24"
+      description: "iSCSI-B path - 10.100.4.0/24"
       type: ethernet
       state: up
       ipv4:
         enabled: true
         address:
-        - ip: 10.0.4.71
+        - ip: 10.100.4.71
           prefix-length: 24
         dhcp: false
       ipv6:
@@ -23,5 +23,5 @@ spec:
       mtu: 9000
     routes:
       config:
-      - destination: 10.0.4.0/24
+      - destination: 10.100.4.0/24
         next-hop-interface: eno7

@@ -18,7 +18,7 @@
      nodeSelector:
        # kubernetes.io/hostname: <node-name>
        # node-role: "worker"
-       name: "rhpoc-wrkr03"
+       name: "rhpoc-us02-wrkr03"
 
 ---
 
@@ -29,8 +29,8 @@ metadata:
   name: policy-dns
 spec:
   nodeSelector:
-    #node-role.kubernetes.io/worker: "rhpoc-wrkr03"    # target worker nodes
-    name: "rhpoc-wrkr03"
+    #node-role.kubernetes.io/worker: "rhpoc-us02-wrkr03"    # target worker nodes
+    name: "rhpoc-us02-wrkr03"
   desiredState:
     dns-resolver:
       config:

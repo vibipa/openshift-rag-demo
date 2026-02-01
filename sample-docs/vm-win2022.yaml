@@ -18,7 +18,7 @@ spec:
           resources:
             requests:
               storage: 64Gi
-          storageClassName: kmcs-ontap-nas1-class
+          storageClassName: comp-ontap-nas1-class
         source:
           blank: {}
     - metadata:
@@ -30,10 +30,10 @@ spec:
           resources:
             requests:
               storage: 15Gi
-          storageClassName: kmcs-ontap-nas1-class
+          storageClassName: comp-ontap-nas1-class
         source:
           http:
-            url: "http://10.0.0.12/Upload-Site/SW_DVD9_Win_Server_STD_CORE_2022_2108.51_64Bit_English_DC_STD_MLF_X24-19220.iso"    # ← Put your URL here
+            url: "http://10.100.0.12/Upload-Site/SW_DVD9_Win_Server_STD_CORE_2022_2108.51_64Bit_English_DC_STD_MLF_X24-19220.iso"    # ← Put your URL here
   template:
     metadata:
       labels:

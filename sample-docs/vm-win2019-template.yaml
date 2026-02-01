@@ -108,7 +108,7 @@ parameters:
   - name: STORAGE_CLASS
     description: "StorageClass for the root disk"
     required: true
-    value: "kmcs-ontap-nas1-class"
+    value: "comp-ontap-nas1-class"
   - name: WINDOWS_ISO_PVC
     description: "Name of the shared Windows ISO PVC"
     required: true

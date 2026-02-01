@@ -1,0 +1,71 @@
+Networking Preparations
+
+	○ Woker Node vNIC (failover) Cisco B200 M6 blade
+		▪ vNIC eno5 – Management
+		▪ vNIC eno6/7 – iSCSI/NVME 
+		▪ vNIC eno8 – NFS Mounts
+		▪ vNIC eno9 – VM Connectivity - OVS Bridge
+		▪ vNIC eno10 - VM Connectivity - Linux Bridge
+
+	○ Woker Node vNIC (failover) Cisco B200 M5 blade
+		▪ vNIC ens5f0 – Management
+		▪ vNIC ens5f1/5f2 – iSCSI/NVME 
+		▪ vNIC ens5f3 – NFS Mounts
+		▪ vNIC ens5f4 – VM Connectivity - OVS Brige
+		▪ vNIC ens5f5 – VM Connectivity  - Linux Bridge
+			
+	○ Node Details
+
+	bash-5.1 ~ $ oc get nodes -o wide
+	NAME                STATUS   ROLES                  AGE   VERSION    INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                                                KERNEL-VERSION                 CONTAINER-RUNTIME
+	rhpoc-mgr01    Ready    control-plane,master   9d    v1.31.13   10.100.0.61     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
+	rhpoc-mgr02    Ready    control-plane,master   88d   v1.31.13   10.100.0.62     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
+	rhpoc-mgr03    Ready    control-plane,master   88d   v1.31.13   10.100.0.63     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
+	rhpoc-wrkr01   Ready    worker                 23d   v1.31.13   10.100.0.71     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
+	rhpoc-wrkr02   Ready    worker                 17d   v1.31.13   10.100.0.72     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
+	rhpoc-wrkr03   Ready    worker                 17d   v1.31.13   10.100.0.73     <none>        Red Hat Enterprise Linux CoreOS 418.94.202510081222-0   5.14.0-427.93.1.el9_4.x86_64   cri-o://1.31.13-2.rhaos4.18.git15789b8.el9
+	bash-5.1 ~ $ ^C
+	bash-5.1 ~ $ 
+	 
+	○ Current Network Configurations(Networking -> NodeNetworkState):
+		▪ Control Nodes:
+			• eno5 – Management/SDN Network
+			• br-ex – External Bridge(connected to en05)
+			• br-int – Internal SDN Bridge
+			• genev_sys_6081 – Geneve tunnel for SDN overlay
+			• Patch bridges connect br-ex <-> br-int
+		▪ Worker Nodes:
+			• eno5 – Management/SDN Network
+			• eno6, eno7 - iSCSI-A and iSCSI-B 
+			• eno8 – NFS connections
+			• eno9 -  OVS Bridge for VM traffic
+			• eno10 - Linux Bridge for High Performance Networks 
+			• br-ex – External Bridge(connected to en05)
+			• br-int – Internal SDN Bridge
+			• lbr-uplink1 - Linux Bridge
+			• br-vm-network - OVS Bridge 
+			• genev_sys_6081 – Geneve tunnel for SDN overlay
+			• Patch bridges connect br-ex <-> br-int
+		
+	○ Prepare the Worker Node Network Layout
+		▪ Management/SDN
+			• UCS Failover NIC: eno5
+			• Control plane communication
+		▪ VM Traffic
+			• UCS Failover NIC: eno9
+			• Create OVS-Bridge
+			• Create VLAN xxx
+			• Create VLAN xxx
+		▪ Storage(NFS)
+			• UCS Failover NIC: en08
+			• Set IP Address:
+				- rhpoc-wrkr[01-03] -> eno8 -> 10.100.1.71-73
+			• Set Jumbo frames: 9000
+			• NFS mounts through PVC
+		▪ Storage(iSCSI)
+			• UCS NIC: en06 and eno7
+			• Set IP Address: 
+				- rhpoc-wrkr[01-03] -> eno6 -> 10.100.3.71-73
+				- rhpoc-wrkr[01-03] -> eno7 -> 10.100.4.71-73
+			• Set Jumbo frames: 9000
+			• NFS mounts through PVC

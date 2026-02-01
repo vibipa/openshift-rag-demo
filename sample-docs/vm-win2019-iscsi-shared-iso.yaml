@@ -21,7 +21,7 @@ spec:
           resources:
             requests:
               storage: 64Gi
-          storageClassName: kmcs-ontap-iscsi1-gold-class
+          storageClassName: comp-ontap-iscsi1-gold-class
         source:
           blank: {}
   template:
@@ -30,7 +30,7 @@ spec:
         kubevirt.io/vm: fin-iscsi-vm01
     spec:
       nodeSelector:
-        kubernetes.io/hostname: rhpoc-us02-wrkr02
+        kubernetes.io/hostname: rhpoc-wrkr02
       domain:
         cpu:
           cores: 4
