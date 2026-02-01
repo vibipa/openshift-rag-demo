@@ -1,4 +1,5 @@
 import os
+import time
 from pathlib import Path
 from azure.search.documents import SearchClient
 from azure.search.documents.indexes import SearchIndexClient
@@ -130,7 +131,7 @@ def index_documents():
         
         # Generate embedding
         embedding = get_embedding(content)
-        
+        time.sleep(1)
         doc = {
             "id": file_path.stem,
             "title": title,
