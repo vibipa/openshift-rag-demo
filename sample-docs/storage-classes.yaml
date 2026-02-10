@@ -1,0 +1,241 @@
+apiVersion: v1
+items:
+- allowVolumeExpansion: true
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    annotations:
+      storageclass.kubernetes.io/is-default-class: "true"
+      storageclass.kubevirt.io/is-default-virt-class: "true"
+    creationTimestamp: "2025-12-18T21:41:23Z"
+    name: comp-ontap-nas1-class
+    resourceVersion: "54809994"
+    uid: 8a637ab0-640b-4449-bd01-9e6855878c70
+  mountOptions:
+  - sec=sys
+  parameters:
+    backendType: ontap-nas
+    fsType: nfs
+    storagePools: comp-ontap-nas1-prod:.*
+  provisioner: csi.trident.netapp.io
+  reclaimPolicy: Delete
+  volumeBindingMode: Immediate
+- allowVolumeExpansion: true
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    creationTimestamp: "2025-12-22T19:08:26Z"
+    name: comp-ontap-nas1-gold-class
+    resourceVersion: "61384267"
+    uid: b1d12de2-1983-4d8b-b42b-f38014bf1760
+  mountOptions:
+  - sec=sys
+  parameters:
+    backendType: ontap-nas
+    fsType: nfs
+    storagePools: comp-ontap-nas1-prod:us02_na01_n01_ssd1, us02_na01_n02_ssd1
+  provisioner: csi.trident.netapp.io
+  reclaimPolicy: Delete
+  volumeBindingMode: Immediate
+- allowVolumeExpansion: true
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    creationTimestamp: "2025-12-22T19:08:50Z"
+    name: comp-ontap-nas1-silver-class
+    resourceVersion: "61384707"
+    uid: 069ca126-af91-4c87-ab5a-65082a0e0098
+  mountOptions:
+  - sec=sys
+  parameters:
+    backendType: ontap-nas
+    fsType: nfs
+    storagePools: comp-ontap-nas1-prod:us02_na01_n04_sata4_e
+  provisioner: csi.trident.netapp.io
+  reclaimPolicy: Delete
+  volumeBindingMode: Immediate
+- apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    creationTimestamp: "2025-11-04T16:32:07Z"
+    labels:
+      local.storage.openshift.io/owner-name: local-disks
+      local.storage.openshift.io/owner-namespace: openshift-local-storage
+    name: localblock-sc
+    resourceVersion: "42717"
+    uid: 23b3e956-1c32-49cc-beb6-94d1e911d574
+  provisioner: kubernetes.io/no-provisioner
+  reclaimPolicy: Delete
+  volumeBindingMode: WaitForFirstConsumer
+- apiVersion: snapshot.storage.k8s.io/v1
+  deletionPolicy: Retain
+  driver: csi.trident.netapp.io
+  kind: VolumeSnapshotClass
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"snapshot.storage.k8s.io/v1","deletionPolicy":"Delete","driver":"csi.trident.netapp.io","kind":"VolumeSnapshotClass","metadata":{"annotations":{},"name":"comp-ontap-nas1-snapclass"},"parameters":{"backendType":"ontap-nas"}}
+    creationTimestamp: "2026-01-19T01:15:15Z"
+    generation: 1
+    labels:
+      kanister-cloned-from: comp-ontap-nas1-snapclass
+    name: k10-clone-comp-ontap-nas1-snapclass
+    resourceVersion: "107882612"
+    uid: bcacb9ae-5504-4fe4-9cc4-7a07faf6ccec
+  parameters:
+    backendType: ontap-nas
+- apiVersion: snapshot.storage.k8s.io/v1
+  deletionPolicy: Delete
+  driver: csi.trident.netapp.io
+  kind: VolumeSnapshotClass
+  metadata:
+    annotations:
+      k10.kasten.io/is-snapshot-class: "true"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"snapshot.storage.k8s.io/v1","deletionPolicy":"Delete","driver":"csi.trident.netapp.io","kind":"VolumeSnapshotClass","metadata":{"annotations":{},"name":"comp-ontap-nas1-snapclass"},"parameters":{"backendType":"ontap-nas"}}
+    creationTimestamp: "2025-12-11T17:38:31Z"
+    generation: 1
+    name: comp-ontap-nas1-snapclass
+    resourceVersion: "107777394"
+    uid: 104f59b7-e096-4117-a65f-c75f26479106
+  parameters:
+    backendType: ontap-nas
+- apiVersion: cdi.kubevirt.io/v1beta1
+  kind: StorageProfile
+  metadata:
+    creationTimestamp: "2025-12-18T21:41:23Z"
+    generation: 2
+    labels:
+      app: containerized-data-importer
+      app.kubernetes.io/component: storage
+      app.kubernetes.io/managed-by: cdi-controller
+      app.kubernetes.io/part-of: hyperconverged-cluster
+      app.kubernetes.io/version: 4.18.23
+      cdi.kubevirt.io: ""
+    name: comp-ontap-nas1-class
+    ownerReferences:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      blockOwnerDeletion: true
+      controller: true
+      kind: CDI
+      name: cdi-kubevirt-hyperconverged
+      uid: b299ea24-241d-46e3-a6e7-b5a8c0e2972e
+    resourceVersion: "107882614"
+    uid: c567fd83-65e2-4952-8c98-d553b39a97ae
+  spec: {}
+  status:
+    claimPropertySets:
+    - accessModes:
+      - ReadWriteMany
+      volumeMode: Filesystem
+    - accessModes:
+      - ReadWriteOnce
+      volumeMode: Filesystem
+    cloneStrategy: snapshot
+    dataImportCronSourceFormat: snapshot
+    provisioner: csi.trident.netapp.io
+    snapshotClass: k10-clone-comp-ontap-nas1-snapclass
+    storageClass: comp-ontap-nas1-class
+- apiVersion: cdi.kubevirt.io/v1beta1
+  kind: StorageProfile
+  metadata:
+    creationTimestamp: "2025-12-22T19:08:26Z"
+    generation: 2
+    labels:
+      app: containerized-data-importer
+      app.kubernetes.io/component: storage
+      app.kubernetes.io/managed-by: cdi-controller
+      app.kubernetes.io/part-of: hyperconverged-cluster
+      app.kubernetes.io/version: 4.18.23
+      cdi.kubevirt.io: ""
+    name: comp-ontap-nas1-gold-class
+    ownerReferences:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      blockOwnerDeletion: true
+      controller: true
+      kind: CDI
+      name: cdi-kubevirt-hyperconverged
+      uid: b299ea24-241d-46e3-a6e7-b5a8c0e2972e
+    resourceVersion: "107882615"
+    uid: 3254f4ed-5b47-4c82-8462-df068ab1b562
+  spec: {}
+  status:
+    claimPropertySets:
+    - accessModes:
+      - ReadWriteMany
+      volumeMode: Filesystem
+    - accessModes:
+      - ReadWriteOnce
+      volumeMode: Filesystem
+    cloneStrategy: snapshot
+    dataImportCronSourceFormat: snapshot
+    provisioner: csi.trident.netapp.io
+    snapshotClass: k10-clone-comp-ontap-nas1-snapclass
+    storageClass: comp-ontap-nas1-gold-class
+- apiVersion: cdi.kubevirt.io/v1beta1
+  kind: StorageProfile
+  metadata:
+    creationTimestamp: "2025-12-22T19:08:50Z"
+    generation: 2
+    labels:
+      app: containerized-data-importer
+      app.kubernetes.io/component: storage
+      app.kubernetes.io/managed-by: cdi-controller
+      app.kubernetes.io/part-of: hyperconverged-cluster
+      app.kubernetes.io/version: 4.18.23
+      cdi.kubevirt.io: ""
+    name: comp-ontap-nas1-silver-class
+    ownerReferences:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      blockOwnerDeletion: true
+      controller: true
+      kind: CDI
+      name: cdi-kubevirt-hyperconverged
+      uid: b299ea24-241d-46e3-a6e7-b5a8c0e2972e
+    resourceVersion: "107882613"
+    uid: cfa72d31-f6db-48bf-accc-c1d3f270dc63
+  spec: {}
+  status:
+    claimPropertySets:
+    - accessModes:
+      - ReadWriteMany
+      volumeMode: Filesystem
+    - accessModes:
+      - ReadWriteOnce
+      volumeMode: Filesystem
+    cloneStrategy: snapshot
+    dataImportCronSourceFormat: snapshot
+    provisioner: csi.trident.netapp.io
+    snapshotClass: k10-clone-comp-ontap-nas1-snapclass
+    storageClass: comp-ontap-nas1-silver-class
+- apiVersion: cdi.kubevirt.io/v1beta1
+  kind: StorageProfile
+  metadata:
+    creationTimestamp: "2025-11-04T16:32:54Z"
+    generation: 1
+    labels:
+      app: containerized-data-importer
+      app.kubernetes.io/component: storage
+      app.kubernetes.io/managed-by: cdi-controller
+      app.kubernetes.io/part-of: hyperconverged-cluster
+      app.kubernetes.io/version: 4.18.23
+      cdi.kubevirt.io: ""
+    name: localblock-sc
+    ownerReferences:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      blockOwnerDeletion: true
+      controller: true
+      kind: CDI
+      name: cdi-kubevirt-hyperconverged
+      uid: b299ea24-241d-46e3-a6e7-b5a8c0e2972e
+    resourceVersion: "38734095"
+    uid: 33da51ac-1d17-4ae6-a648-f6f77f7bfed0
+  spec: {}
+  status:
+    cloneStrategy: copy
+    dataImportCronSourceFormat: pvc
+    provisioner: kubernetes.io/no-provisioner
+    storageClass: localblock-sc
+kind: List
+metadata:
+  resourceVersion: ""
