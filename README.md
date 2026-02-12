@@ -468,50 +468,12 @@ openshift-rag-demo/
 └── README.md
 ```
 
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👤 Author
-
-**Vibi Abraham**
-- Role: Cloud Service Architect
-- Experience: 21 years in IT Infrastructure, Security & Operations
-- Focus: AI adoption for operational excellence
-
----
-
 ## 🙏 Acknowledgments
 
 - Azure OpenAI team for GPT-4o and embedding models
 - Azure AI Search team for vector database capabilities
 - OpenShift community for troubleshooting documentation
 - Anthropic Claude for development assistance
-
----
-
-## 📞 Support
-
-For issues and questions:
-- 🐛 [Report bugs](https://github.com/vibipa/openshift-rag-demo/issues)
-- 💡 [Request features](https://github.com/vibipa/openshift-rag-demo/issues)
-- 📧 Contact: [Your email/contact info]
 
 ---
 
