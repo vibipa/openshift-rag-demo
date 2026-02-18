@@ -14,7 +14,8 @@ terraform {
 }
 
 provider "azurerm" {
-  features {
+   subscription_id = "06d92034-52df-4dd6-aba8-9c2759ccec5e"
+   features {
     cognitive_account {
       purge_soft_delete_on_destroy = true
     }
