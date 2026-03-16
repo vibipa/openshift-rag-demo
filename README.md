@@ -5,6 +5,9 @@
 [![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC?logo=terraform)](https://www.terraform.io/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+<img width="816" height="866" alt="image" src="https://github.com/user-attachments/assets/95189eab-d531-4291-a80e-0ce579bd3227" />
+
+
 > An AI-powered RAG application that reduces Mean Time to Resolution (MTTR) during Cloud infrastructure outages by instantly retrieving relevant troubleshooting documentation through semantic search.
 
 **Key Achievement:** Transforms manual SharePoint document searches (10-15 minutes) into instant, context-aware answers (< 5 seconds).
