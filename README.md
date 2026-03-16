@@ -29,7 +29,10 @@
 
 ### Project Objective
 
-**Primary Goal:** Accelerate incident response by providing on-call engineers with instant access to relevant runbooks, configurations, and troubleshooting procedures during critical outages.
+**Primary Goals:** '
+Context Fragmentation: Teams struggle to quickly gain accurate context about the client environment, delaying delivery, service enhancements, and necessary upgrades while increasing risk.	
+Incident Correlation Complexity: Incident resolution is often delayed because correlating architecture, historical context, and known issues is time-intensive, particularly in complex environments.
+
 
 **Business Value:**
 - 🚀 Reduce MTTR by 40-60% during OpenShift incidents
