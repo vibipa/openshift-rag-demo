@@ -5,7 +5,7 @@
 [![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC?logo=terraform)](https://www.terraform.io/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> An AI-powered RAG application that reduces Mean Time to Resolution (MTTR) during OpenShift outages by instantly retrieving relevant troubleshooting documentation through semantic search.
+> An AI-powered RAG application that reduces Mean Time to Resolution (MTTR) during Cloud infrastructure outages by instantly retrieving relevant troubleshooting documentation through semantic search.
 
 **Key Achievement:** Transforms manual SharePoint document searches (10-15 minutes) into instant, context-aware answers (< 5 seconds).
 
@@ -29,7 +29,7 @@
 
 ### Project Objective
 
-**Primary Goals:** '
+**Primary Goals:**
 Context Fragmentation: Teams struggle to quickly gain accurate context about the client environment, delaying delivery, service enhancements, and necessary upgrades while increasing risk.	
 Incident Correlation Complexity: Incident resolution is often delayed because correlating architecture, historical context, and known issues is time-intensive, particularly in complex environments.
 
