@@ -1,4 +1,4 @@
-# OpenShift Troubleshooting Copilot
+# Cloud Operations Assistant
 
 [![Azure](https://img.shields.io/badge/Azure-OpenAI-0078D4?logo=microsoft-azure)](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python)](https://www.python.org/)
