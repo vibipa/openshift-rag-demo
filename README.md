@@ -102,7 +102,7 @@ Incident Correlation Complexity: Incident resolution is often delayed because co
 
 #### Phase 1: Indexing (One-Time Setup)
 ```
-YAML Files → Generate Embeddings → Upload to AI Search
+Infrastrcture facts → Generate Embeddings → Upload to AI Search
    (43)         (1,536 dims each)      (Vector Index)
 ```
 
@@ -388,20 +388,6 @@ A: When ArgoCD sync fails, verify:
 
 ---
 
-## 📊 Performance Metrics
-
-| Metric | Value |
-|--------|-------|
-| Query response time | < 5 seconds |
-| Embedding generation | ~0.5 seconds |
-| Vector search | ~0.2 seconds |
-| GPT-4 completion | ~3-4 seconds |
-| Top-3 retrieval accuracy | 95%+ |
-| Knowledge base size | 43 documents |
-| Uptime | 99.9% (Container Apps SLA) |
-
----
-
 ## 💰 Cost Estimate
 
 | Component | Monthly Cost |
@@ -493,8 +479,6 @@ openshift-rag-demo/
 ---
 
 <div align="center">
-
-**Built with ❤️ using Azure AI Services**
 
 [⬆ Back to Top](#openshift-troubleshooting-copilot)
 
