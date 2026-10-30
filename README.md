@@ -487,7 +487,7 @@ openshift-rag-demo/
 
 - [Azure OpenAI Documentation](https://learn.microsoft.com/en-us/azure/ai-services/openai/)
 - [Azure AI Search Documentation](https://learn.microsoft.com/en-us/azure/search/)
-- [RAG Pattern Overview](https://learn.microsoft.com/en-us/azure/architecture/ai-ml/architecture/rag-pattern)
+- [RAG Pattern Overview](https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/rag/rag-solution-design-and-evaluation-guide)
 - [Terraform Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs)
 
 ---
