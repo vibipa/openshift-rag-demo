@@ -10,8 +10,6 @@
 
 > An AI-powered RAG application that reduces Mean Time to Resolution (MTTR) during Cloud infrastructure outages by instantly retrieving relevant troubleshooting documentation through semantic search.
 
-**Key Achievement:** Transforms manual SharePoint document searches (10-15 minutes) into instant, context-aware answers (< 5 seconds).
-
 ---
 
 ## 📋 Table of Contents
