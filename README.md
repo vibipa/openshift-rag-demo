@@ -457,16 +457,6 @@ openshift-rag-demo/
 ├── .gitignore
 └── README.md
 ```
-
-## 🙏 Acknowledgments
-
-- Azure OpenAI team for GPT-4o and embedding models
-- Azure AI Search team for vector database capabilities
-- OpenShift community for troubleshooting documentation
-- Anthropic Claude for development assistance
-
----
-
 ## 🔗 Links
 
 - [Azure OpenAI Documentation](https://learn.microsoft.com/en-us/azure/ai-services/openai/)
