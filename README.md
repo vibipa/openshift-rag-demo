@@ -397,8 +397,7 @@ A: When ArgoCD sync fails, verify:
 | Storage | ~$1 |
 | **Total** | **~$161-311/month** |
 
-**ROI:** One outage resolved 30 minutes faster = $500-1000 saved. Break even with **1 incident per month**.
-
+Note: Cost calculations are approximate and intended to help avoid unnecessary expenses when working on small projects or prototypes.
 ---
 
 ## 🔐 Security & Compliance
